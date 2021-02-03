@@ -1,0 +1,28 @@
+{
+  "name": "tihiy-production/php-image-compressor",
+  "type": "library",
+  "description": "Image compressor for PNG and JPEG formats",
+  "keywords": [
+    "php",
+    "image",
+    "compression",
+    "png",
+    "jpeg"
+  ],
+  "require": {
+    "php": ">=7.0.0"
+  },
+  "homepage": "https://github.com/tihiy-production/php-image-compressor.git",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nikita Vorushilo",
+      "email": "young95strong@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "tihiy\\Compressor\\": "source/"
+    }
+  }
+}
