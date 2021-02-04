@@ -2,7 +2,7 @@
 
 **ImageCompressor** - this is an easy way to compress images on the fly.
 
-There are two methods: sourceFile, compress
+There are two methods:
 
 * sourceFile - takes the path to the file to be compressed. Returns an ImageCompressor object.
 * compress - takes a file path to save after compression. Returns the boolean value of the execution result.
