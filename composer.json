@@ -1,7 +1,7 @@
 {
   "name": "tihiy-production/php-image-compressor",
   "type": "library",
-  "description": "Image compressor for PNG and JPEG formats",
+  "description": "Image compressor for PNG and JPEG",
   "keywords": [
     "php",
     "image",
@@ -10,7 +10,8 @@
     "jpeg"
   ],
   "require": {
-    "php": ">=7.0.0"
+    "php": ">=7.0.0",
+    "ext-fileinfo": "*"
   },
   "homepage": "https://github.com/tihiy-production/php-image-compressor.git",
   "license": "MIT",

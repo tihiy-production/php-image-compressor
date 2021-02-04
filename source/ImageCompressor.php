@@ -53,13 +53,15 @@ class ImageCompressor
     }
 
     /**
-     * @param string $path
+     * Get an object based on the data of the uploaded file
+     *
+     * @param string $path The path to the file to be compressed
      *
      * @return ImageCompressor
      *
      * @throws ErrorException
      */
-    public static function sourceFile(string $path): ImageCompressor
+    public static function sourceFile(string $path): self
     {
         if (!file_exists($path)) {
             throw new ErrorException('The specified file does not exist');
@@ -71,17 +73,13 @@ class ImageCompressor
     /**
      * Compress image
      *
-     * @param string|null $path
+     * @param string|null $path The path to the file where the compressed file will be saved
      *
      * @return bool
      */
     public function compress(?string $path = null): bool
     {
         try {
-            if ($path && !file_exists($path)) {
-                return false;
-            }
-
             if (!$path) {
                 $path = $this->path;
             }
@@ -95,7 +93,7 @@ class ImageCompressor
             $escapedInputFilePath = escapeshellarg($this->path);
             $escapedOutputFilePath = escapeshellarg($tempFilePath);
 
-            $command = '';
+            $command = null;
             switch ($this->mimeType) {
                 case self::MIME_TYPE_PNG:
                     $command = sprintf(
@@ -128,6 +126,8 @@ class ImageCompressor
     }
 
     /**
+     * Run system command to compress file
+     *
      * @param string $command
      *
      * @return bool
@@ -141,6 +141,8 @@ class ImageCompressor
     }
 
     /**
+     * Save compressed file
+     *
      * @param string $path
      * @param string $tempFilePath
      *
@@ -160,8 +162,6 @@ class ImageCompressor
     }
 
     /**
-     * Returns allowed mime types
-     *
      * @return array
      */
     protected function getAllowedMimeTypes(): array
