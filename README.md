@@ -4,23 +4,22 @@
 
 There are two methods:
 
-* sourceFile - takes the path to the file to be compressed. Returns an ImageCompressor object.
-* compress - takes a file path to save after compression. Returns the boolean value of the execution result.
-
-If a save path was not passed to "compress" method, the file that was passed in the "sourceFile" method will be
-compressed.
+* sourceFile - takes the path to the file to be compressed. Returns an ImageCompressor object. (requred)
+* setOptions - takes an array of parameters that you want to pass to the library for compression. (optional)
+* compress - takes a file path to save after compression. Returns the boolean value of the execution result. If a save
+  path was not passed, the file that was passed in the "sourceFile" method will be compressed directly. (optional)
 
 # Requirements
 
-To use, you need to install the following libraries:
+The following libraries need to be installed:
 
-### ImageMagick
+### Jpegoptim
 
 ```
-sudo apt-get -y install imagemagick
+sudo apt-get -y install jpegoptim
 ```
 
-### pngquant
+### Pngquant
 
 ```
 sudo apt-get -y install pngquant
@@ -41,3 +40,36 @@ composer require tihiy-production/php-image-compressor
 ```php
 ImageCompressor::sourceFile('test.jpg')->compress('test_compressed.jpg');
 ```
+
+with *setOptions* method
+
+### PNG
+
+List of available options "pngquant -h"
+
+```php
+ImageCompressor::sourceFile('test.png')
+    ->setOptions([
+        '--force',
+        '--skip-if-larger',
+        '--quality 85'
+    ])
+    ->compress('test_compressed.png');
+```
+
+### JPEG
+
+List of available options "jpegoptim -h"
+
+```php
+ImageCompressor::sourceFile('test.jpg')
+    ->setOptions([
+        '--force',
+        '--strip-all',
+        '-m85'
+    ])
+    ->compress('test_compressed.jpg');
+```
+
+The entire list of available options you can get by entering the terminal "pngquant -h" and "jpegoptim -h" accordingly.
+
