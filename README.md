@@ -45,8 +45,6 @@ with *setOptions* method
 
 ### PNG
 
-List of available options "pngquant -h"
-
 ```php
 ImageCompressor::sourceFile('test.png')
     ->setOptions([
@@ -58,8 +56,6 @@ ImageCompressor::sourceFile('test.png')
 ```
 
 ### JPEG
-
-List of available options "jpegoptim -h"
 
 ```php
 ImageCompressor::sourceFile('test.jpg')
