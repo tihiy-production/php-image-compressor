@@ -3,7 +3,9 @@
 namespace tihiy\Compressor;
 
 use ErrorException;
-use Exception;
+use tihiy\Compressor\compressors\BaseCompressor;
+use tihiy\Compressor\compressors\Jpegoptim;
+use tihiy\Compressor\compressors\Pngquant;
 
 /**
  * Class ImageCompressor.
@@ -15,156 +17,55 @@ use Exception;
 class ImageCompressor
 {
     /**
-     * Allowed image mime types
+     * MIME-types
      */
     protected const MIME_TYPE_PNG = 'image/png';
 
     protected const MIME_TYPE_JPEG = 'image/jpeg';
 
     /**
-     * Success code on the last line of the command output
-     */
-    protected const SYSTEM_SUCCESS_CODE = 0;
-
-    /**
-     * The path to the file to compress
-     *
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * File MIME-type
-     *
-     * @var string
-     */
-    protected $mimeType;
-
-    /**
-     * ImageCompressor constructor.
-     *
-     * @param string $path
-     * @param string $mimeType
-     */
-    public function __construct(string $path, string $mimeType)
-    {
-        $this->path = $path;
-        $this->mimeType = $mimeType;
-    }
-
-    /**
      * Get an object based on the data of the uploaded file
      *
      * @param string $path The path to the file to be compressed
      *
-     * @return ImageCompressor
+     * @return BaseCompressor
      *
      * @throws ErrorException
      */
-    public static function sourceFile(string $path): self
+    public static function sourceFile(string $path): BaseCompressor
     {
         if (!file_exists($path)) {
-            throw new ErrorException('The specified file does not exist');
+            throw new ErrorException('The file does not exist');
         }
 
-        return new self($path, mime_content_type($path));
-    }
+        $mimeType = mime_content_type($path);
 
-    /**
-     * Compress image
-     *
-     * @param string|null $path The path to the file where the compressed file will be saved
-     *
-     * @return bool
-     */
-    public function compress(?string $path = null): bool
-    {
-        try {
-            if (!$path) {
-                $path = $this->path;
-            }
+        if (!self::allowCompression($mimeType)) {
+            throw new ErrorException("Compression is not available for '{$mimeType}' MIME-type");
+        }
 
-            if (!$this->allowCompression()) {
-                return copy($this->path, $path);
-            }
-
-            $tempFilePath = tempnam(sys_get_temp_dir(), 'CompressedFile');
-
-            $escapedInputFilePath = escapeshellarg($this->path);
-            $escapedOutputFilePath = escapeshellarg($tempFilePath);
-
-            $command = null;
-            switch ($this->mimeType) {
-                case self::MIME_TYPE_PNG:
-                    $command = sprintf(
-                        "pngquant %s --force --quality 85 --output %s",
-                        $escapedInputFilePath,
-                        $escapedOutputFilePath
-                    );
-                    break;
-                case self::MIME_TYPE_JPEG:
-                    $command = sprintf(
-                        "convert %s -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG -colorspace sRGB %s",
-                        $escapedInputFilePath,
-                        $escapedOutputFilePath
-                    );
-                    break;
-            }
-
-            if (!$command) {
-                return false;
-            }
-
-            if (!$this->executeCommand($command)) {
-                return false;
-            }
-
-            return $this->saveFile($path, $tempFilePath);
-        } catch (Exception $exception) {
-            return false;
+        switch ($mimeType) {
+            case self::MIME_TYPE_PNG:
+                return new Pngquant($path);
+            default:
+                return new Jpegoptim($path);
         }
     }
 
     /**
-     * Run system command to compress file
-     *
-     * @param string $command
+     * @param string $mimeType
      *
      * @return bool
      */
-    protected function executeCommand(string $command): bool
+    protected static function allowCompression(string $mimeType): bool
     {
-        $resultCode = null;
-        system($command, $resultCode);
-
-        return $resultCode === self::SYSTEM_SUCCESS_CODE;
-    }
-
-    /**
-     * Save compressed file
-     *
-     * @param string $path
-     * @param string $tempFilePath
-     *
-     * @return bool
-     */
-    protected function saveFile(string $path, string $tempFilePath): bool
-    {
-        return (bool)file_put_contents($path, file_get_contents($tempFilePath));
-    }
-
-    /**
-     * @return bool
-     */
-    protected function allowCompression(): bool
-    {
-        return in_array($this->mimeType, $this->getAllowedMimeTypes(), true);
+        return in_array($mimeType, self::getAllowedMimeTypes(), true);
     }
 
     /**
      * @return array
      */
-    protected function getAllowedMimeTypes(): array
+    protected static function getAllowedMimeTypes(): array
     {
         return [
             self::MIME_TYPE_PNG,

@@ -5,7 +5,11 @@
   "keywords": [
     "php",
     "image",
+    "photo",
     "compression",
+    "compressor",
+    "jpegoptim",
+    "pngquant",
     "png",
     "jpeg"
   ],
