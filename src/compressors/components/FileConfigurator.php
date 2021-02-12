@@ -5,9 +5,11 @@ namespace tihiy\Compressor\compressors\components;
 use ErrorException;
 
 /**
- * Class FileConfigurator
+ * Class FileConfigurator.
  *
- * @package tihiy\Compressor\compressors\components
+ * @author  Nikita Vorushilo <young95strong@gmail.com>
+ *
+ * @link    https://github.com/tihiy-production/php-image-compressor
  */
 class FileConfigurator
 {
