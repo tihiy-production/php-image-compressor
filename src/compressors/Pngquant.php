@@ -28,19 +28,19 @@ class Pngquant extends BaseCompressor
     {
         try {
             if (!$path) {
-                $path = $this->path;
+                $path = $this->getSourcePath();
             }
 
-            $tempFilePath = $this->createTemporaryFile();
+            $tempFilePath = $this->fileConfigurator->createTemporaryFile();
 
             $command = sprintf(
                 "pngquant %s %s --output %s",
-                $this->getEscapedFilePath($this->path),
+                $this->systemCommand->getEscapedFilePath($this->getSourcePath()),
                 $this->getOptions(),
-                $this->getEscapedFilePath($tempFilePath)
+                $this->systemCommand->getEscapedFilePath($tempFilePath)
             );
 
-            if (!$this->executeCommand($command)) {
+            if (!$this->systemCommand->execute($command)) {
                 return false;
             }
 

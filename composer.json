@@ -27,7 +27,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "tihiy\\Compressor\\": "source/"
+      "tihiy\\Compressor\\": "src/"
     }
   }
 }
