@@ -29,19 +29,19 @@ class Jpegoptim extends BaseCompressor
     {
         try {
             if (!$path) {
-                $path = $this->path;
+                $path = $this->getSourcePath();
             }
 
-            $tempFilePath = $this->createTemporaryFile();
+            $tempFilePath = $this->fileConfigurator->createTemporaryFile();
 
             $command = sprintf(
                 "jpegoptim %s --stdout %s > %s",
                 $this->getOptions(),
-                $this->getEscapedFilePath($this->path),
-                $this->getEscapedFilePath($tempFilePath)
+                $this->systemCommand->getEscapedFilePath($this->getSourcePath()),
+                $this->systemCommand->getEscapedFilePath($tempFilePath)
             );
 
-            if (!$this->executeCommand($command)) {
+            if (!$this->systemCommand->execute($command)) {
                 return false;
             }
 
