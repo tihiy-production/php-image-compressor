@@ -4,7 +4,7 @@
 
 There are following methods:
 
-* sourceFile - takes the path to the file to be compressed. Returns an ImageCompressor object. (requred)
+* sourceFile - takes the path to the file to be compressed. (requred)
 * compress - takes a file path to save after compression. Returns the boolean value of the execution result. If a save
   path was not passed, the file that was passed in the "sourceFile" method will be compressed directly. (optional)
 
