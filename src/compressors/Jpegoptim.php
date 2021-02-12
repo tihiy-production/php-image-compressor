@@ -10,19 +10,6 @@ use Exception;
 class Jpegoptim extends BaseCompressor
 {
     /**
-     * Default options
-     *
-     * All parameters available by entering the command "jpegoptim -h" in terminal
-     *
-     * @var array
-     */
-    protected $options = [
-        '--force',
-        '--size=200',
-        '--max=85',
-    ];
-
-    /**
      * {@inheritDoc}
      */
     public function compress(?string $path = null): bool
@@ -35,8 +22,7 @@ class Jpegoptim extends BaseCompressor
             $tempFilePath = $this->fileConfigurator->createTemporaryFile();
 
             $command = sprintf(
-                "jpegoptim %s --stdout %s > %s",
-                $this->getOptions(),
+                "jpegoptim --force --strip-com --strip-iptc --strip-icc --strip-xmp --all-progressive --quiet --size=200 --max=85 --stdout %s > %s",
                 $this->systemCommand->getEscapedFilePath($this->getSourcePath()),
                 $this->systemCommand->getEscapedFilePath($tempFilePath)
             );
@@ -49,13 +35,5 @@ class Jpegoptim extends BaseCompressor
         } catch (Exception $exception) {
             return false;
         }
-    }
-
-    /**
-     * @return string
-     */
-    protected function getOptions(): string
-    {
-        return str_replace(['jpegoptim', '--stdout'], ['', ''], parent::getOptions());
     }
 }

@@ -20,13 +20,6 @@ abstract class BaseCompressor
     private $sourcePath;
 
     /**
-     * Compression options
-     *
-     * @var array
-     */
-    protected $options = [];
-
-    /**
      * @var FileConfigurator
      */
     protected $fileConfigurator;
@@ -49,18 +42,6 @@ abstract class BaseCompressor
     }
 
     /**
-     * @param array $options
-     *
-     * @return $this
-     */
-    public function setOptions(array $options): BaseCompressor
-    {
-        $this->options = $options;
-
-        return $this;
-    }
-
-    /**
      * Compress image
      *
      * @param string|null $path The path to the file where the compressed file will be saved
@@ -74,24 +55,7 @@ abstract class BaseCompressor
      */
     public function __destruct()
     {
-        $this->flushOptions();
         $this->fileConfigurator->removeTemporaryFile();
-    }
-
-    /**
-     * @return void
-     */
-    protected function flushOptions(): void
-    {
-        $this->options = [];
-    }
-
-    /**
-     * @return string
-     */
-    protected function getOptions(): string
-    {
-        return implode(' ', $this->options);
     }
 
     /**

@@ -10,18 +10,6 @@ use Exception;
 class Pngquant extends BaseCompressor
 {
     /**
-     * Default options
-     *
-     * All parameters available by entering the command "pngquant -h" in terminal
-     *
-     * @var array
-     */
-    protected $options = [
-        '--force',
-        '--quality 85',
-    ];
-
-    /**
      * {@inheritDoc}
      */
     public function compress(?string $path = null): bool
@@ -34,9 +22,8 @@ class Pngquant extends BaseCompressor
             $tempFilePath = $this->fileConfigurator->createTemporaryFile();
 
             $command = sprintf(
-                "pngquant %s %s --output %s",
+                "pngquant %s --force --skip-if-large --speed 1 --quality 85 --output %s",
                 $this->systemCommand->getEscapedFilePath($this->getSourcePath()),
-                $this->getOptions(),
                 $this->systemCommand->getEscapedFilePath($tempFilePath)
             );
 
@@ -48,15 +35,5 @@ class Pngquant extends BaseCompressor
         } catch (Exception $exception) {
             return false;
         }
-    }
-
-    /**
-     * Compression options
-     *
-     * @return string
-     */
-    protected function getOptions(): string
-    {
-        return str_replace(['pngquant', '--output'], ['', ''], parent::getOptions());
     }
 }
