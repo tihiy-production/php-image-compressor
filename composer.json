@@ -29,9 +29,9 @@
   "autoload": {
     "psr-4": {
       "tihiy\\Compressor\\": "src/"
-    },
-    "scripts": {
-      "test": "phpunit tests"
     }
+  },
+  "scripts": {
+    "test": "phpunit tests"
   }
 }
