@@ -15,8 +15,7 @@
   ],
   "require": {
     "php": ">=7.0.0",
-    "ext-fileinfo": "*",
-    "phpunit/phpunit": "^5.0"
+    "ext-fileinfo": "*"
   },
   "homepage": "https://github.com/tihiy-production/php-image-compressor.git",
   "license": "MIT",
@@ -30,8 +29,5 @@
     "psr-4": {
       "tihiy\\Compressor\\": "src/"
     }
-  },
-  "scripts": {
-    "test": "phpunit tests"
   }
 }
