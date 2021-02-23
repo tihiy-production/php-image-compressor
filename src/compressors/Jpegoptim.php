@@ -25,17 +25,41 @@ class Jpegoptim extends BaseCompressor
 
             $tempFilePath = $this->fileConfigurator->createTemporaryFile();
 
+            $params = [
+                '--strip-com',
+                '--strip-iptc',
+                '--strip-icc',
+                '--strip-xmp',
+                '--all-progressive',
+                '--quiet',
+                '--max=85',
+            ];
+
+            if (filesize($this->getSourcePath()) > 100000) {
+                $params[] = '-S40%%';
+            }
+
             $command = sprintf(
-                "jpegoptim --force --strip-com --strip-iptc --strip-icc --strip-xmp --all-progressive --quiet --size=200 --max=85 --stdout %s > %s",
+                "jpegoptim %s --stdout %s > %s",
+                implode(' ', $params),
                 $this->systemCommand->getEscapedFilePath($this->getSourcePath()),
                 $this->systemCommand->getEscapedFilePath($tempFilePath)
             );
 
+            $result = true;
             if (!$this->systemCommand->execute($command)) {
-                return false;
+                $result = false;
             }
 
-            return $this->saveFile($path, $tempFilePath);
+            if (!$this->saveFile($path, $tempFilePath)) {
+                $result = false;
+            }
+
+            if ($result === false) {
+                return copy($this->getSourcePath(), $path);
+            }
+
+            return true;
         } catch (Exception $exception) {
             return false;
         }
