@@ -31,11 +31,20 @@ class Pngquant extends BaseCompressor
                 $this->systemCommand->getEscapedFilePath($tempFilePath)
             );
 
+            $result = true;
             if (!$this->systemCommand->execute($command)) {
-                return false;
+                $result = false;
             }
 
-            return $this->saveFile($path, $tempFilePath);
+            if (!$this->saveFile($path, $tempFilePath)) {
+                $result = false;
+            }
+
+            if ($result === false) {
+                return copy($this->getSourcePath(), $path);
+            }
+
+            return true;
         } catch (Exception $exception) {
             return false;
         }
