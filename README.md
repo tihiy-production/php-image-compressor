@@ -20,8 +20,6 @@ sudo apt-get -y install pngquant
 
 ## Installation
 
-### Composer
-
 Execute the following command to install this package as a dependency in your project:
 
 ```
