@@ -2,6 +2,8 @@
 
 namespace tihiy\Compressor\compressors;
 
+use ErrorException;
+use Exception;
 use tihiy\Compressor\compressors\components\FileConfigurator;
 use tihiy\Compressor\compressors\components\SystemCommand;
 
@@ -15,7 +17,7 @@ use tihiy\Compressor\compressors\components\SystemCommand;
 abstract class BaseCompressor
 {
     /**
-     * The path to the file to compress
+     * Path to the file to compress
      *
      * @var string
      */
@@ -24,12 +26,12 @@ abstract class BaseCompressor
     /**
      * @var FileConfigurator
      */
-    protected $fileConfigurator;
+    private $fileConfigurator;
 
     /**
      * @var SystemCommand
      */
-    protected $systemCommand;
+    private $systemCommand;
 
     /**
      * BaseCompressor constructor.
@@ -50,10 +52,46 @@ abstract class BaseCompressor
      *
      * @return bool
      */
-    abstract public function compress(?string $path = null): bool;
+    public function compress(?string $path = null): bool
+    {
+        try {
+            if (!$path) {
+                $path = $this->getSourcePath();
+            }
+
+            $tempFilePath = $this->fileConfigurator->createTemporaryFile();
+
+            $command = static::getCommand(
+                $this->systemCommand->getEscapedFilePath($this->getSourcePath()),
+                $this->systemCommand->getEscapedFilePath($tempFilePath)
+            );
+
+            if ($this->systemCommand->execute($command)) {
+                if ($this->saveFile($path, $tempFilePath)) {
+                    return true;
+                }
+            }
+
+            return copy($this->getSourcePath(), $path);
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
 
     /**
-     * Reset all
+     * Command to be executed
+     *
+     * @param string $sourcePath Path to the file to compress
+     * @param string $tempFilePath Buffer temporary file to save compressed file
+     *
+     * @return string
+     *
+     * @throws ErrorException
+     */
+    abstract protected function getCommand(string $sourcePath, string $tempFilePath): string;
+
+    /**
+     * BaseCompressor destructor.
      */
     public function __destruct()
     {
@@ -61,6 +99,8 @@ abstract class BaseCompressor
     }
 
     /**
+     * Path to the file to compress
+     *
      * @return string
      */
     protected function getSourcePath(): string
@@ -76,8 +116,12 @@ abstract class BaseCompressor
      *
      * @return bool
      */
-    protected function saveFile(string $path, string $tempFilePath): bool
+    private function saveFile(string $path, string $tempFilePath): bool
     {
-        return (bool)file_put_contents($path, file_get_contents($tempFilePath));
+        if (filesize($tempFilePath)) {
+            return (bool)file_put_contents($path, file_get_contents($tempFilePath));
+        }
+
+        return false;
     }
 }

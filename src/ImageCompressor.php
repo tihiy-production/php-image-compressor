@@ -19,14 +19,14 @@ class ImageCompressor
     /**
      * MIME-types
      */
-    protected const MIME_TYPE_PNG = 'image/png';
+    private const MIME_TYPE_PNG = 'image/png';
 
-    protected const MIME_TYPE_JPEG = 'image/jpeg';
+    private const MIME_TYPE_JPEG = 'image/jpeg';
 
     /**
-     * Get an object based on the data of the uploaded file
+     * Get a compression object based on the file MIME-type
      *
-     * @param string $path The path to the file to be compressed
+     * @param string $path Path to the file to be compressed
      *
      * @return BaseCompressor
      *
@@ -53,19 +53,23 @@ class ImageCompressor
     }
 
     /**
+     * Checking for compression availability
+     *
      * @param string $mimeType
      *
      * @return bool
      */
-    protected static function allowCompression(string $mimeType): bool
+    private static function allowCompression(string $mimeType): bool
     {
         return in_array($mimeType, self::getAllowedMimeTypes(), true);
     }
 
     /**
+     * List of available file MIME-types
+     *
      * @return array
      */
-    protected static function getAllowedMimeTypes(): array
+    private static function getAllowedMimeTypes(): array
     {
         return [
             self::MIME_TYPE_PNG,

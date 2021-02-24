@@ -2,8 +2,6 @@
 
 namespace tihiy\Compressor\compressors;
 
-use Exception;
-
 /**
  * Class Pngquant.
  *
@@ -16,37 +14,20 @@ class Pngquant extends BaseCompressor
     /**
      * {@inheritDoc}
      */
-    public function compress(?string $path = null): bool
+    protected function getCommand(string $sourcePath, string $tempFilePath): string
     {
-        try {
-            if (!$path) {
-                $path = $this->getSourcePath();
-            }
+        $options = [
+            '--force',
+            '--skip-if-large',
+            '--speed 1',
+            '--quality 85',
+        ];
 
-            $tempFilePath = $this->fileConfigurator->createTemporaryFile();
-
-            $command = sprintf(
-                "pngquant %s --force --skip-if-large --speed 1 --quality 85 --output %s",
-                $this->systemCommand->getEscapedFilePath($this->getSourcePath()),
-                $this->systemCommand->getEscapedFilePath($tempFilePath)
-            );
-
-            $result = true;
-            if (!$this->systemCommand->execute($command)) {
-                $result = false;
-            }
-
-            if (!$this->saveFile($path, $tempFilePath)) {
-                $result = false;
-            }
-
-            if ($result === false) {
-                return copy($this->getSourcePath(), $path);
-            }
-
-            return true;
-        } catch (Exception $exception) {
-            return false;
-        }
+        return sprintf(
+            "pngquant %s %s --output %s",
+            $sourcePath,
+            implode(' ', $options),
+            $tempFilePath
+        );
     }
 }

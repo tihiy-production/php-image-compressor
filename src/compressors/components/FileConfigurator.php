@@ -21,6 +21,24 @@ class FileConfigurator
     private $temporaryFile;
 
     /**
+     * Determine the file size in bytes
+     *
+     * @param string $pathToFile
+     *
+     * @return integer
+     *
+     * @throws ErrorException
+     */
+    public static function getFileSize(string $pathToFile): int
+    {
+        if (is_file($pathToFile)) {
+            return filesize($pathToFile);
+        }
+
+        throw new ErrorException("File '{$pathToFile}' not found.");
+    }
+
+    /**
      * Create a temporary file and save data to it
      *
      * @param string $fileData
@@ -46,16 +64,6 @@ class FileConfigurator
     }
 
     /**
-     * Register temporary file for deletion at the end of work
-     *
-     * @param string $pathToFile
-     */
-    public function registerTemporaryFile(string $pathToFile): void
-    {
-        $this->temporaryFile = $pathToFile;
-    }
-
-    /**
      * Delete registered temporary file
      */
     public function removeTemporaryFile(): void
@@ -65,5 +73,15 @@ class FileConfigurator
         }
 
         unset($this->temporaryFile);
+    }
+
+    /**
+     * Register temporary file for deletion at the end of work
+     *
+     * @param string $pathToFile
+     */
+    private function registerTemporaryFile(string $pathToFile): void
+    {
+        $this->temporaryFile = $pathToFile;
     }
 }
