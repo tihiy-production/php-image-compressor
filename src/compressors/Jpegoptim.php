@@ -2,7 +2,8 @@
 
 namespace tihiy\Compressor\compressors;
 
-use Exception;
+use ErrorException;
+use tihiy\Compressor\compressors\components\FileConfigurator;
 
 /**
  * Class Jpegoptim.
@@ -14,54 +15,44 @@ use Exception;
 class Jpegoptim extends BaseCompressor
 {
     /**
+     * The minimum file size of bytes for which to set the size compression setting
+     */
+    private const MIN_FILE_SIZE = 150000;
+
+    /**
      * {@inheritDoc}
      */
-    public function compress(?string $path = null): bool
+    protected function getCommand(string $sourcePath, string $tempFilePath): string
     {
-        try {
-            if (!$path) {
-                $path = $this->getSourcePath();
-            }
+        $options = [
+            '--strip-com',
+            '--strip-iptc',
+            '--strip-icc',
+            '--strip-xmp',
+            '--all-progressive',
+            '--quiet',
+            '--max=85',
+        ];
 
-            $tempFilePath = $this->fileConfigurator->createTemporaryFile();
-
-            $params = [
-                '--strip-com',
-                '--strip-iptc',
-                '--strip-icc',
-                '--strip-xmp',
-                '--all-progressive',
-                '--quiet',
-                '--max=85',
-            ];
-
-            if (filesize($this->getSourcePath()) > 100000) {
-                $params[] = '-S40%%';
-            }
-
-            $command = sprintf(
-                "jpegoptim %s --stdout %s > %s",
-                implode(' ', $params),
-                $this->systemCommand->getEscapedFilePath($this->getSourcePath()),
-                $this->systemCommand->getEscapedFilePath($tempFilePath)
-            );
-
-            $result = true;
-            if (!$this->systemCommand->execute($command)) {
-                $result = false;
-            }
-
-            if (!$this->saveFile($path, $tempFilePath)) {
-                $result = false;
-            }
-
-            if ($result === false) {
-                return copy($this->getSourcePath(), $path);
-            }
-
-            return true;
-        } catch (Exception $exception) {
-            return false;
+        if ($this->isEnableSizeOption()) {
+            $options[] = '-S40%%';
         }
+
+        return sprintf(
+            "jpegoptim %s --stdout %s > %s",
+            implode(' ', $options),
+            $sourcePath,
+            $tempFilePath
+        );
+    }
+
+    /**
+     * @return bool
+     *
+     * @throws ErrorException
+     */
+    private function isEnableSizeOption(): bool
+    {
+        return FileConfigurator::getFileSize($this->getSourcePath()) > self::MIN_FILE_SIZE;
     }
 }

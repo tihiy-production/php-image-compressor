@@ -1,13 +1,10 @@
 {
   "name": "tihiy-production/php-image-compressor",
-  "type": "library",
   "description": "ImageCompressor - this is an easy way to compress images on the fly",
   "keywords": [
     "php",
-    "image",
-    "photo",
-    "compression",
-    "compressor",
+    "images",
+    "compress",
     "jpegoptim",
     "pngquant",
     "png",
@@ -19,6 +16,9 @@
   },
   "homepage": "https://github.com/tihiy-production/php-image-compressor.git",
   "license": "MIT",
+  "support": {
+    "email": "young95strong@gmail.com"
+  },
   "authors": [
     {
       "name": "Nikita Vorushilo",
