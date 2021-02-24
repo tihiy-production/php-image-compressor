@@ -2,7 +2,7 @@
 
 **ImageCompressor** - this is an easy way to compress images on the fly.
 
-# Requirements
+## Requirements
 
 The following libraries need to be installed:
 
@@ -18,9 +18,9 @@ sudo apt-get -y install jpegoptim
 sudo apt-get -y install pngquant
 ```
 
-# Installation
+## Installation
 
-## Composer
+### Composer
 
 Execute the following command to install this package as a dependency in your project:
 
@@ -28,7 +28,7 @@ Execute the following command to install this package as a dependency in your pr
 composer require tihiy-production/php-image-compressor
 ```
 
-# Usage
+## Usage
 
 ```php
 ImageCompressor::sourceFile('test.jpg')->compress('test_compressed.jpg');
