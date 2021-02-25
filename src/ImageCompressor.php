@@ -24,7 +24,7 @@ class ImageCompressor
     private const MIME_TYPE_JPEG = 'image/jpeg';
 
     /**
-     * Get a compression object based on the file MIME-type
+     * Get a compressor object based on the file MIME-type
      *
      * @param string $path Path to the file to be compressed
      *
@@ -44,11 +44,17 @@ class ImageCompressor
             throw new ErrorException("Compression is not available for '{$mimeType}' MIME-type");
         }
 
+        $sourceFileData = file_get_contents($path);
+
+        if (!$sourceFileData) {
+            throw new ErrorException('File content is not available');
+        }
+
         switch ($mimeType) {
             case self::MIME_TYPE_PNG:
-                return new Pngquant($path);
+                return new Pngquant($path, $sourceFileData);
             default:
-                return new Jpegoptim($path);
+                return new Jpegoptim($path, $sourceFileData);
         }
     }
 

@@ -14,11 +14,11 @@ use ErrorException;
 class FileConfigurator
 {
     /**
-     * The path to the temporary file
+     * Path to the temporary file
      *
      * @var string
      */
-    private $temporaryFile;
+    private static $temporaryFileList = [];
 
     /**
      * Determine the file size in bytes
@@ -50,8 +50,7 @@ class FileConfigurator
     public function createTemporaryFile(string $fileData = ''): string
     {
         if ($filePath = tempnam(sys_get_temp_dir(), 'File')) {
-            $this->registerTemporaryFile($filePath);
-
+            static::registerTemporaryFile($filePath);
             if ($handler = fopen($filePath, 'wb')) {
                 fwrite($handler, $fileData);
                 fclose($handler);
@@ -66,13 +65,16 @@ class FileConfigurator
     /**
      * Delete registered temporary file
      */
-    public function removeTemporaryFile(): void
+    public static function removeTemporaryFiles()
     {
-        if (is_file($this->temporaryFile)) {
-            unlink($this->temporaryFile);
+        if (static::$temporaryFileList && is_array(static::$temporaryFileList)) {
+            foreach (static::$temporaryFileList as $index => $pathToFile) {
+                if (is_file($pathToFile)) {
+                    unlink($pathToFile);
+                }
+                unset(static::$temporaryFileList[$index]);
+            }
         }
-
-        unset($this->temporaryFile);
     }
 
     /**
@@ -80,8 +82,8 @@ class FileConfigurator
      *
      * @param string $pathToFile
      */
-    private function registerTemporaryFile(string $pathToFile): void
+    public static function registerTemporaryFile(string $pathToFile)
     {
-        $this->temporaryFile = $pathToFile;
+        static::$temporaryFileList[] = $pathToFile;
     }
 }

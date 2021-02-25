@@ -3,7 +3,6 @@
 namespace tihiy\Compressor\compressors;
 
 use ErrorException;
-use tihiy\Compressor\compressors\components\FileConfigurator;
 
 /**
  * Class Jpegoptim.
@@ -15,9 +14,11 @@ use tihiy\Compressor\compressors\components\FileConfigurator;
 class Jpegoptim extends BaseCompressor
 {
     /**
-     * The minimum file size of bytes for which to set the size compression setting
+     * Try to optimize file to given size as percentage of the original file size
      */
-    private const MIN_FILE_SIZE = 150000;
+    private const DEFAULT_SIZE = 90;
+
+    private const MAX_SIZE = 40;
 
     /**
      * {@inheritDoc}
@@ -25,6 +26,7 @@ class Jpegoptim extends BaseCompressor
     protected function getCommand(string $sourcePath, string $tempFilePath): string
     {
         $options = [
+            '--force',
             '--strip-com',
             '--strip-iptc',
             '--strip-icc',
@@ -34,9 +36,12 @@ class Jpegoptim extends BaseCompressor
             '--max=85',
         ];
 
-        if ($this->isEnableSizeOption()) {
-            $options[] = '-S40%%';
+        $size = self::DEFAULT_SIZE;
+        if ($this->isCompressionAvailable()) {
+            $size = self::MAX_SIZE;
         }
+
+        $options[] = "-S{$size}%%";
 
         return sprintf(
             "jpegoptim %s --stdout %s > %s",
@@ -47,12 +52,27 @@ class Jpegoptim extends BaseCompressor
     }
 
     /**
+     * Checking for file compression availability
+     *
      * @return bool
      *
      * @throws ErrorException
      */
-    private function isEnableSizeOption(): bool
+    private function isCompressionAvailable(): bool
     {
-        return FileConfigurator::getFileSize($this->getSourcePath()) > self::MIN_FILE_SIZE;
+        $bufferFile = $this->fileConfigurator->createTemporaryFile($this->getSourceFileData());
+
+        $output = null;
+        exec(sprintf("jpegoptim --strip-all --all-progressive %s", $bufferFile), $output);
+        $output = $output[0] ?? '';
+
+        $fromBytes = null;
+        $toBytes = null;
+        if (1 === preg_match('/(\d+) --> (\d+)/', $output, $matches)) {
+            $fromBytes = isset($matches[1]) ? (float)$matches[1] : null;
+            $toBytes = isset($matches[1]) ? (float)$matches[2] : null;
+        }
+
+        return (($fromBytes && $toBytes) && ($toBytes > $fromBytes));
     }
 }
