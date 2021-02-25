@@ -17,6 +17,16 @@ class SystemCommand
     private const SYSTEM_SUCCESS_CODE = 0;
 
     /**
+     * @var integer
+     */
+    private $resultCode;
+
+    /**
+     * @var array
+     */
+    private $output;
+
+    /**
      * Escape a string so that it can be used as a command line argument
      *
      * @param string $path
@@ -33,13 +43,38 @@ class SystemCommand
      *
      * @param string $command
      *
+     * @return SystemCommand
+     */
+    public function execute(string $command): self
+    {
+        $this->resultCode = null;
+        $this->output = null;
+        exec($command, $this->output, $this->resultCode);
+
+        return $this;
+    }
+
+    /**
+     * The system command was executed successfully
+     *
      * @return bool
      */
-    public function execute(string $command): bool
+    public function isSuccess(): bool
     {
-        $resultCode = null;
-        system($command, $resultCode);
+        return $this->resultCode === self::SYSTEM_SUCCESS_CODE;
+    }
 
-        return $resultCode === self::SYSTEM_SUCCESS_CODE;
+    /**
+     * Last line from executed command result
+     *
+     * @return string
+     */
+    public function getOutput(): string
+    {
+        if ($this->isSuccess()) {
+            return $this->output[0] ?? '';
+        }
+
+        return '';
     }
 }

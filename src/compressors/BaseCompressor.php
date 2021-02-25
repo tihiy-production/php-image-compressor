@@ -38,7 +38,7 @@ abstract class BaseCompressor
     /**
      * @var SystemCommand
      */
-    private $systemCommand;
+    protected $systemCommand;
 
     /**
      * BaseCompressor constructor.
@@ -75,7 +75,7 @@ abstract class BaseCompressor
                 $this->systemCommand->getEscapedFilePath($tempFilePath)
             );
 
-            if ($this->systemCommand->execute($command)) {
+            if ($this->systemCommand->execute($command)->isSuccess()) {
                 if ($this->saveFile($path, $tempFilePath)) {
                     return true;
                 }
@@ -90,14 +90,14 @@ abstract class BaseCompressor
     /**
      * Command to be executed
      *
-     * @param string $sourcePath Path to the file to compress
+     * @param string $sourceFilePath Path to the file to compress
      * @param string $tempFilePath Buffer temporary file to save compressed file
      *
      * @return string
      *
      * @throws ErrorException
      */
-    abstract protected function getCommand(string $sourcePath, string $tempFilePath): string;
+    abstract protected function getCommand(string $sourceFilePath, string $tempFilePath): string;
 
     /**
      * BaseCompressor destructor.

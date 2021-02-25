@@ -23,7 +23,7 @@ class Jpegoptim extends BaseCompressor
     /**
      * {@inheritDoc}
      */
-    protected function getCommand(string $sourcePath, string $tempFilePath): string
+    protected function getCommand(string $sourceFilePath, string $tempFilePath): string
     {
         $options = [
             '--force',
@@ -46,7 +46,7 @@ class Jpegoptim extends BaseCompressor
         return sprintf(
             "jpegoptim %s --stdout %s > %s",
             implode(' ', $options),
-            $sourcePath,
+            $sourceFilePath,
             $tempFilePath
         );
     }
@@ -60,19 +60,17 @@ class Jpegoptim extends BaseCompressor
      */
     private function isCompressionAvailable(): bool
     {
-        $bufferFile = $this->fileConfigurator->createTemporaryFile($this->getSourceFileData());
-
-        $output = null;
-        exec(sprintf("jpegoptim --strip-all --all-progressive %s", $bufferFile), $output);
-        $output = $output[0] ?? '';
+        $tempFilePath = $this->fileConfigurator->createTemporaryFile($this->getSourceFileData());
+        $command = sprintf("jpegoptim --strip-all --all-progressive %s", $tempFilePath);
+        $output = $this->systemCommand->execute($command)->getOutput();
 
         $fromBytes = null;
         $toBytes = null;
         if (1 === preg_match('/(\d+) --> (\d+)/', $output, $matches)) {
-            $fromBytes = isset($matches[1]) ? (float)$matches[1] : null;
-            $toBytes = isset($matches[1]) ? (float)$matches[2] : null;
+            $fromBytes = isset($matches[1]) ? $matches[1] : null;
+            $toBytes = isset($matches[1]) ? $matches[2] : null;
         }
 
-        return (($fromBytes && $toBytes) && ($toBytes > $fromBytes));
+        return $fromBytes !== $toBytes;
     }
 }
