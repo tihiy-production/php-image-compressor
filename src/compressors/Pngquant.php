@@ -14,7 +14,7 @@ class Pngquant extends BaseCompressor
     /**
      * {@inheritDoc}
      */
-    protected function getCommand(string $sourcePath, string $tempFilePath): string
+    protected function getCommand(string $sourceFilePath, string $tempFilePath): string
     {
         $options = [
             '--force',
@@ -25,7 +25,7 @@ class Pngquant extends BaseCompressor
 
         return sprintf(
             "pngquant %s %s --output %s",
-            $sourcePath,
+            $sourceFilePath,
             implode(' ', $options),
             $tempFilePath
         );
