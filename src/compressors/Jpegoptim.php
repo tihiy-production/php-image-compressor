@@ -67,8 +67,8 @@ class Jpegoptim extends BaseCompressor
         $fromBytes = null;
         $toBytes = null;
         if (1 === preg_match('/(\d+) --> (\d+)/', $output, $matches)) {
-            $fromBytes = isset($matches[1]) ? $matches[1] : null;
-            $toBytes = isset($matches[1]) ? $matches[2] : null;
+            $fromBytes = $matches[1] ?? null;
+            $toBytes = $matches[2] ?? null;
         }
 
         return $fromBytes !== $toBytes;
