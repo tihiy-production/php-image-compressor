@@ -21,12 +21,19 @@ abstract class BaseCompressor
      *
      * @var string
      */
-    private $sourcePath;
+    private $sourceFilePath;
+
+    /**
+     * Binary data of a file
+     *
+     * @var string
+     */
+    private $sourceFileData;
 
     /**
      * @var FileConfigurator
      */
-    private $fileConfigurator;
+    protected $fileConfigurator;
 
     /**
      * @var SystemCommand
@@ -36,11 +43,13 @@ abstract class BaseCompressor
     /**
      * BaseCompressor constructor.
      *
-     * @param string $path
+     * @param string $sourceFilePath
+     * @param string $sourceFileData
      */
-    public function __construct(string $path)
+    public function __construct(string $sourceFilePath, string $sourceFileData)
     {
-        $this->sourcePath = $path;
+        $this->sourceFilePath = $sourceFilePath;
+        $this->sourceFileData = $sourceFileData;
         $this->fileConfigurator = new FileConfigurator();
         $this->systemCommand = new SystemCommand();
     }
@@ -48,7 +57,7 @@ abstract class BaseCompressor
     /**
      * Compress image
      *
-     * @param string|null $path The path to the file where the compressed file will be saved
+     * @param string|null $path Path to the file where the compressed file will be saved
      *
      * @return bool
      */
@@ -56,13 +65,13 @@ abstract class BaseCompressor
     {
         try {
             if (!$path) {
-                $path = $this->getSourcePath();
+                $path = $this->getSourceFilePath();
             }
 
             $tempFilePath = $this->fileConfigurator->createTemporaryFile();
 
             $command = static::getCommand(
-                $this->systemCommand->getEscapedFilePath($this->getSourcePath()),
+                $this->systemCommand->getEscapedFilePath($this->getSourceFilePath()),
                 $this->systemCommand->getEscapedFilePath($tempFilePath)
             );
 
@@ -72,7 +81,7 @@ abstract class BaseCompressor
                 }
             }
 
-            return copy($this->getSourcePath(), $path);
+            return copy($this->getSourceFilePath(), $path);
         } catch (Exception $exception) {
             return false;
         }
@@ -95,17 +104,27 @@ abstract class BaseCompressor
      */
     public function __destruct()
     {
-        $this->fileConfigurator->removeTemporaryFile();
+        FileConfigurator::removeTemporaryFiles();
     }
 
     /**
-     * Path to the file to compress
+     * Return binary data of a file
      *
      * @return string
      */
-    protected function getSourcePath(): string
+    protected function getSourceFileData(): string
     {
-        return $this->sourcePath;
+        return $this->sourceFileData;
+    }
+
+    /**
+     * Return path to the file to compress
+     *
+     * @return string
+     */
+    private function getSourceFilePath(): string
+    {
+        return $this->sourceFilePath;
     }
 
     /**
@@ -115,10 +134,12 @@ abstract class BaseCompressor
      * @param string $tempFilePath
      *
      * @return bool
+     *
+     * @throws ErrorException
      */
     private function saveFile(string $path, string $tempFilePath): bool
     {
-        if (filesize($tempFilePath)) {
+        if (FileConfigurator::getFileSize($tempFilePath)) {
             return (bool)file_put_contents($path, file_get_contents($tempFilePath));
         }
 
