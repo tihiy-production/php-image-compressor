@@ -24,7 +24,7 @@ abstract class BaseCompressor
     private $sourceFilePath;
 
     /**
-     * Binary data of a file
+     * Binary data of the file to compress
      *
      * @var string
      */
@@ -130,8 +130,8 @@ abstract class BaseCompressor
     /**
      * Save compressed file
      *
-     * @param string $path
-     * @param string $tempFilePath
+     * @param string $path Path to save the compressed file
+     * @param string $tempFilePath Path to the temporary compressed file
      *
      * @return bool
      *

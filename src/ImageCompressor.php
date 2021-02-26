@@ -24,7 +24,7 @@ class ImageCompressor
     private const MIME_TYPE_JPEG = 'image/jpeg';
 
     /**
-     * Get a compressor object based on the file MIME-type
+     * Get a compressor object
      *
      * @param string $path Path to the file to be compressed
      *

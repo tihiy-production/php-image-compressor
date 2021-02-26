@@ -17,11 +17,15 @@ class SystemCommand
     private const SYSTEM_SUCCESS_CODE = 0;
 
     /**
+     * Exit code of finished process
+     *
      * @var integer
      */
     private $resultCode;
 
     /**
+     * Last line from executed command result
+     *
      * @var array
      */
     private $output;
@@ -41,7 +45,7 @@ class SystemCommand
     /**
      * Run system command
      *
-     * @param string $command
+     * @param string $command The command to be executed
      *
      * @return SystemCommand
      */
