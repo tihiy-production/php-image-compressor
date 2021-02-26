@@ -14,9 +14,9 @@ use ErrorException;
 class FileConfigurator
 {
     /**
-     * Path to the temporary file
+     * List of registered temporary files
      *
-     * @var string
+     * @var array
      */
     private static $temporaryFileList = [];
 
@@ -51,6 +51,7 @@ class FileConfigurator
     {
         if ($filePath = tempnam(sys_get_temp_dir(), 'File')) {
             static::registerTemporaryFile($filePath);
+
             if ($handler = fopen($filePath, 'wb')) {
                 fwrite($handler, $fileData);
                 fclose($handler);
@@ -63,15 +64,16 @@ class FileConfigurator
     }
 
     /**
-     * Delete registered temporary file
+     * Delete registered temporary files
      */
-    public static function removeTemporaryFiles()
+    public static function removeTemporaryFiles(): void
     {
         if (static::$temporaryFileList && is_array(static::$temporaryFileList)) {
             foreach (static::$temporaryFileList as $index => $pathToFile) {
                 if (is_file($pathToFile)) {
                     unlink($pathToFile);
                 }
+
                 unset(static::$temporaryFileList[$index]);
             }
         }
@@ -82,7 +84,7 @@ class FileConfigurator
      *
      * @param string $pathToFile
      */
-    public static function registerTemporaryFile(string $pathToFile)
+    private static function registerTemporaryFile(string $pathToFile): void
     {
         static::$temporaryFileList[] = $pathToFile;
     }
