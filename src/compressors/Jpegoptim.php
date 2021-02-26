@@ -3,6 +3,7 @@
 namespace tihiy\Compressor\compressors;
 
 use ErrorException;
+use tihiy\Compressor\compressors\components\FileConfigurator;
 
 /**
  * Class Jpegoptim.
@@ -61,19 +62,16 @@ class Jpegoptim extends BaseCompressor
     private function isCompressionAvailable(): bool
     {
         $tempFilePath = $this->fileConfigurator->createTemporaryFile($this->getSourceFileData());
+
         $command = sprintf(
-            "jpegoptim --strip-all --all-progressive %s",
+            "jpegoptim --force --all-progressive --quiet --max=85 %s",
             $this->systemCommand->getEscapedFilePath($tempFilePath)
         );
-        $output = $this->systemCommand->execute($command)->getOutput();
 
-        if (1 === preg_match('/(\d+) --> (\d+)/', $output, $matches)) {
-            $fromBytes = $matches[1] ?? null;
-            $toBytes = $matches[2] ?? null;
-
-            return (($fromBytes && $toBytes) && ($fromBytes !== $toBytes));
+        if (!$this->systemCommand->execute($command)->isSuccess()) {
+            return false;
         }
 
-        return false;
+        return FileConfigurator::getFileSize($this->getSourceFilePath()) > FileConfigurator::getFileSize($tempFilePath);
     }
 }
