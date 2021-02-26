@@ -108,6 +108,16 @@ abstract class BaseCompressor
     }
 
     /**
+     * Return path to the file to compress
+     *
+     * @return string
+     */
+    protected function getSourceFilePath(): string
+    {
+        return $this->sourceFilePath;
+    }
+
+    /**
      * Return binary data of a file
      *
      * @return string
@@ -115,16 +125,6 @@ abstract class BaseCompressor
     protected function getSourceFileData(): string
     {
         return $this->sourceFileData;
-    }
-
-    /**
-     * Return path to the file to compress
-     *
-     * @return string
-     */
-    private function getSourceFilePath(): string
-    {
-        return $this->sourceFilePath;
     }
 
     /**

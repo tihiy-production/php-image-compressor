@@ -24,13 +24,6 @@ class SystemCommand
     private $resultCode;
 
     /**
-     * Last line from executed command result
-     *
-     * @var array
-     */
-    private $output;
-
-    /**
      * Escape a string so that it can be used as a command line argument
      *
      * @param string $path
@@ -52,8 +45,7 @@ class SystemCommand
     public function execute(string $command): self
     {
         $this->resultCode = null;
-        $this->output = null;
-        exec($command, $this->output, $this->resultCode);
+        system($command, $this->resultCode);
 
         return $this;
     }
@@ -66,19 +58,5 @@ class SystemCommand
     public function isSuccess(): bool
     {
         return $this->resultCode === self::SYSTEM_SUCCESS_CODE;
-    }
-
-    /**
-     * Last line from executed command result
-     *
-     * @return string
-     */
-    public function getOutput(): string
-    {
-        if ($this->isSuccess()) {
-            return $this->output[0] ?? '';
-        }
-
-        return '';
     }
 }
