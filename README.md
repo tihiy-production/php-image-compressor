@@ -22,8 +22,8 @@ sudo apt-get -y install pngquant
 
 Execute the following command to install this package as a dependency in your project:
 
-```
-composer require tihiy-production/php-image-compressor
+```bash
+composer require "tihiy-production/php-image-compressor"
 ```
 
 ## Usage
@@ -31,3 +31,7 @@ composer require tihiy-production/php-image-compressor
 ```php
 ImageCompressor::sourceFile('test.jpg')->compress('test_compressed.jpg');
 ```
+
+## License
+
+This software is licensed under the MIT License. [View the license](LICENSE.md).
