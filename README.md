@@ -31,3 +31,7 @@ composer require tihiy-production/php-image-compressor
 ```php
 ImageCompressor::sourceFile('test.jpg')->compress('test_compressed.jpg');
 ```
+
+## License
+
+This software is licensed under the MIT License. [View the license](LICENSE).
