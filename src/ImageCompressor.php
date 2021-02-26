@@ -4,6 +4,7 @@ namespace tihiy\Compressor;
 
 use ErrorException;
 use tihiy\Compressor\compressors\BaseCompressor;
+use tihiy\Compressor\compressors\components\FileConfigurator;
 use tihiy\Compressor\compressors\Jpegoptim;
 use tihiy\Compressor\compressors\Pngquant;
 
@@ -38,6 +39,10 @@ class ImageCompressor
             throw new ErrorException('The file does not exist');
         }
 
+        if (!FileConfigurator::getFileSize($path)) {
+            throw new ErrorException('File content is not available');
+        }
+
         $mimeType = mime_content_type($path);
 
         if (!self::allowCompression($mimeType)) {
@@ -45,10 +50,6 @@ class ImageCompressor
         }
 
         $sourceFileData = file_get_contents($path);
-
-        if (!$sourceFileData) {
-            throw new ErrorException('File content is not available');
-        }
 
         switch ($mimeType) {
             case self::MIME_TYPE_PNG:
