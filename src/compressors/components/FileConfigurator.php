@@ -32,10 +32,45 @@ class FileConfigurator
     public static function getFileSize(string $pathToFile): int
     {
         if (is_file($pathToFile)) {
-            return filesize($pathToFile);
+            return (int)filesize($pathToFile);
         }
 
         throw new ErrorException("File '{$pathToFile}' not found.");
+    }
+
+    /**
+     * Get file content
+     *
+     * @param string $pathToFile
+     *
+     * @return string
+     *
+     * @throws ErrorException
+     */
+    public static function getFileContent(string $pathToFile): string
+    {
+        if (is_file($pathToFile)) {
+            return (string)file_get_contents($pathToFile);
+        }
+
+        throw new ErrorException("File '{$pathToFile}' not found.");
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return string
+     */
+    public static function getFileContentByUrl(string $url): string
+    {
+        $options = [
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+            ],
+        ];
+
+        return file_get_contents($url, false, stream_context_create($options));
     }
 
     /**

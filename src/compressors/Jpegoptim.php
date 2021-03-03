@@ -61,17 +61,17 @@ class Jpegoptim extends BaseCompressor
      */
     private function isCompressionAvailable(): bool
     {
-        $tempFilePath = $this->fileConfigurator->createTemporaryFile($this->getSourceFileData());
+        $compressedTempFilePath = $this->fileConfigurator->createTemporaryFile($this->getSourceFileContent());
 
         $command = sprintf(
-            "jpegoptim --force --all-progressive --quiet --max=85 %s",
-            $this->systemCommand->getEscapedFilePath($tempFilePath)
+            "jpegoptim --force --strip-all --all-progressive --quiet --max=85 %s",
+            $this->systemCommand->getEscapedFilePath($compressedTempFilePath)
         );
 
         if (!$this->systemCommand->execute($command)->isSuccess()) {
             return false;
         }
 
-        return FileConfigurator::getFileSize($this->getSourceFilePath()) > FileConfigurator::getFileSize($tempFilePath);
+        return FileConfigurator::getFileSize($this->getSourceTempFilePath()) > FileConfigurator::getFileSize($compressedTempFilePath);
     }
 }

@@ -36,35 +36,35 @@ class ImageCompressorTest extends TestCase
     {
         $this->expectException(ErrorException::class);
 
-        ImageCompressor::sourceFile('/examples/example4.png')->compress();
+        ImageCompressor::sourceFile('/examples/example4.png')->toFile('/examples/example4.png');
     }
 
     public function testSourceFileWithEmptyContentShouldThrowErrorException()
     {
         $this->expectException(ErrorException::class);
 
-        ImageCompressor::sourceFile($this->emptyContentFile)->compress();
+        ImageCompressor::sourceFile($this->emptyContentFile)->toFile($this->emptyContentFile);
     }
 
     public function testSourceFileWithNotValidMimeTypeShouldThrowErrorException()
     {
         $this->expectException(ErrorException::class);
 
-        ImageCompressor::sourceFile($this->gifFile)->compress();
+        ImageCompressor::sourceFile($this->gifFile)->toFile($this->gifFile);
     }
 
-    public function testSourceFileWithoutFilePathShouldThrowArgumentCountError()
+    public function testSourceFileWithoutArgumentsShouldThrowArgumentCountError()
     {
         $this->expectException(ArgumentCountError::class);
 
-        ImageCompressor::sourceFile()->compress();
+        ImageCompressor::sourceFile()->toFile();
     }
 
     public function testSourceFileWithErrorArgumentTypeShouldThrowTypeError()
     {
         $this->expectException(TypeError::class);
 
-        ImageCompressor::sourceFile(null)->compress();
+        ImageCompressor::sourceFile(null)->toFile(null);
     }
 
     public function testSourceFileShouldReturnJpegoptim()
@@ -77,13 +77,137 @@ class ImageCompressorTest extends TestCase
         $this->assertInstanceOf(Pngquant::class, ImageCompressor::sourceFile($this->pngFile));
     }
 
-    public function testCompressJpegFileShouldReturnSuccessResult()
+    public function testSourceFileCompressJpegFileShouldReturnSuccessResult()
     {
-        $this->assertTrue(ImageCompressor::sourceFile($this->jpegFile)->compress($this->compressedJpegFile));
+        $this->assertTrue(ImageCompressor::sourceFile($this->jpegFile)->toFile($this->compressedJpegFile));
     }
 
-    public function testCompressPngFileShouldReturnSuccessResult()
+    public function testSourceFileCompressPngFileShouldReturnSuccessResult()
     {
-        $this->assertTrue(ImageCompressor::sourceFile($this->pngFile)->compress($this->compressedPngFile));
+        $this->assertTrue(ImageCompressor::sourceFile($this->pngFile)->toFile($this->compressedPngFile));
+    }
+
+    public function testSourceContentNotValidFileContentShouldThrowErrorException()
+    {
+        $this->expectException(ErrorException::class);
+
+        ImageCompressor::sourceContent('content')->toContent();
+    }
+
+    public function testSourceContentWithEmptyContentShouldThrowErrorException()
+    {
+        $this->expectException(ErrorException::class);
+
+        ImageCompressor::sourceContent('')->toContent();
+    }
+
+    public function testSourceContentWithoutArgumentsShouldThrowArgumentCountError()
+    {
+        $this->expectException(ArgumentCountError::class);
+
+        ImageCompressor::sourceContent()->toContent();
+    }
+
+    public function testSourceContentWithErrorArgumentTypeShouldThrowTypeError()
+    {
+        $this->expectException(TypeError::class);
+
+        ImageCompressor::sourceContent(null)->toFile(null);
+    }
+
+    public function testSourceContentShouldReturnJpegoptim()
+    {
+        $this->assertInstanceOf(Jpegoptim::class, ImageCompressor::sourceContent(file_get_contents($this->jpegFile)));
+    }
+
+    public function testSourceContentShouldReturnPngquant()
+    {
+        $this->assertInstanceOf(Pngquant::class, ImageCompressor::sourceContent(file_get_contents($this->pngFile)));
+    }
+
+    public function testSourceContentCompressJpegFileToFileShouldReturnSuccessResult()
+    {
+        $this->assertTrue(ImageCompressor::sourceContent(file_get_contents($this->jpegFile))->toFile($this->compressedJpegFile));
+    }
+
+    public function testSourceContentCompressPngFileToFileShouldReturnSuccessResult()
+    {
+        $this->assertTrue(ImageCompressor::sourceContent(file_get_contents($this->pngFile))->toFile($this->compressedPngFile));
+    }
+
+    public function testSourceContentCompressJpegToContentShouldReturnSuccessResult()
+    {
+        $this->assertInternalType(
+            'string',
+            ImageCompressor::sourceContent(file_get_contents($this->jpegFile))->toContent()
+        );
+    }
+
+    public function testSourceContentCompressPngToContentShouldReturnSuccessResult()
+    {
+        $this->assertInternalType(
+            'string',
+            ImageCompressor::sourceContent(file_get_contents($this->pngFile))->toContent()
+        );
+    }
+
+    public function testSourceUrlNotValidFileUrlShouldThrowErrorException()
+    {
+        $this->expectException(ErrorException::class);
+
+        ImageCompressor::sourceUrl('example.com/test.jpg')->toFile($this->jpegFile);
+    }
+
+    public function testSourceUrlWithEmptyUrlShouldThrowErrorException()
+    {
+        $this->expectException(ErrorException::class);
+
+        ImageCompressor::sourceUrl('')->toFile($this->jpegFile);
+    }
+
+    public function testSourceUrlWithoutArgumentsShouldThrowArgumentCountError()
+    {
+        $this->expectException(ArgumentCountError::class);
+
+        ImageCompressor::sourceUrl()->toFile();
+    }
+
+    public function testSourceUrlWithErrorArgumentTypeShouldThrowTypeError()
+    {
+        $this->expectException(TypeError::class);
+
+        ImageCompressor::sourceUrl(null)->toFile(null);
+    }
+
+    public function testSourceUrlShouldReturnJpegoptim()
+    {
+        $this->assertInstanceOf(
+            Jpegoptim::class,
+            ImageCompressor::sourceUrl('https://raw.githubusercontent.com/tihiy-production/php-image-compressor/master/tests/examples/example.jpg')
+        );
+    }
+
+    public function testSourceUrlShouldReturnPngquant()
+    {
+        $this->assertInstanceOf(
+            Pngquant::class,
+            ImageCompressor::sourceUrl('https://raw.githubusercontent.com/tihiy-production/php-image-compressor/master/tests/examples/example2.png')
+        );
+    }
+
+    public function testSourceUrlCompressJpegFileToFileShouldReturnSuccessResult()
+    {
+        $this->assertTrue(
+            ImageCompressor::sourceUrl('https://raw.githubusercontent.com/tihiy-production/php-image-compressor/master/tests/examples/example.jpg')
+                ->toFile($this->compressedJpegFile)
+        );
+    }
+
+    public function testSourceUrlCompressPngFileToFileShouldReturnSuccessResult()
+    {
+        $this->assertTrue(
+            ImageCompressor::sourceUrl('https://raw.githubusercontent.com/tihiy-production/php-image-compressor/master/tests/examples/example2.png')
+                ->toFile($this->compressedPngFile)
+        );
     }
 }
