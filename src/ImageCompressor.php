@@ -25,9 +25,9 @@ class ImageCompressor
     private const MIME_TYPE_JPEG = 'image/jpeg';
 
     /**
-     * Get a compressor object
+     * Compress a local file
      *
-     * @param string $path Path to the file to be compressed
+     * @param string $path Path to the local file to be compressed
      *
      * @return BaseCompressor
      *
@@ -43,19 +43,71 @@ class ImageCompressor
             throw new ErrorException('File content is not available');
         }
 
-        $mimeType = mime_content_type($path);
+        $sourceFileContent = FileConfigurator::getFileContent($path);
+
+        return self::getResponse($sourceFileContent);
+    }
+
+    /**
+     * Compress a string with binary
+     *
+     * @param string $content File content in string
+     *
+     * @return BaseCompressor
+     *
+     * @throws ErrorException
+     */
+    public static function sourceContent(string $content): BaseCompressor
+    {
+        return self::getResponse($content);
+    }
+
+    /**
+     * Compress file by URL instead of having to upload it
+     *
+     * @param string $url Absolute URL to file
+     *
+     * @return BaseCompressor
+     *
+     * @throws ErrorException
+     */
+    public static function sourceUrl(string $url): BaseCompressor
+    {
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            throw new ErrorException('URL is not valid');
+        }
+
+        $sourceFileContent = FileConfigurator::getFileContentByUrl($url);
+
+        return self::getResponse($sourceFileContent);
+    }
+
+    /**
+     * Get a compressor object
+     *
+     * @param string $sourceFileContent File content in string to compress
+     *
+     * @return BaseCompressor
+     *
+     * @throws ErrorException
+     */
+    private static function getResponse(string $sourceFileContent): BaseCompressor
+    {
+        $fileConfigurator = new FileConfigurator();
+
+        $mimeType = mime_content_type($fileConfigurator->createTemporaryFile($sourceFileContent));
 
         if (!self::allowCompression($mimeType)) {
             throw new ErrorException("Compression is not available for '{$mimeType}' MIME-type");
         }
 
-        $sourceFileData = file_get_contents($path);
+        FileConfigurator::removeTemporaryFiles();
 
         switch ($mimeType) {
             case self::MIME_TYPE_PNG:
-                return new Pngquant($path, $sourceFileData);
+                return new Pngquant($sourceFileContent);
             default:
-                return new Jpegoptim($path, $sourceFileData);
+                return new Jpegoptim($sourceFileContent);
         }
     }
 

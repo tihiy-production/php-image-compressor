@@ -17,18 +17,25 @@ use tihiy\Compressor\compressors\components\SystemCommand;
 abstract class BaseCompressor
 {
     /**
-     * Path to the file to compress
+     * Content of the file to compress
      *
      * @var string
      */
-    private $sourceFilePath;
+    private $sourceFileContent;
 
     /**
-     * Binary data of the file to compress
+     * Temporary path to the file to compress
      *
      * @var string
      */
-    private $sourceFileData;
+    private $sourceTempFilePath;
+
+    /**
+     * Temporary file content of the compressed file
+     *
+     * @var string
+     */
+    private $compressedTempFileContent;
 
     /**
      * @var FileConfigurator
@@ -43,55 +50,54 @@ abstract class BaseCompressor
     /**
      * BaseCompressor constructor.
      *
-     * @param string $sourceFilePath
-     * @param string $sourceFileData
+     * @param string $sourceFileContent
+     *
+     * @throws ErrorException
      */
-    public function __construct(string $sourceFilePath, string $sourceFileData)
+    public function __construct(string $sourceFileContent)
     {
-        $this->sourceFilePath = $sourceFilePath;
-        $this->sourceFileData = $sourceFileData;
         $this->fileConfigurator = new FileConfigurator();
         $this->systemCommand = new SystemCommand();
+        $this->sourceTempFilePath = $this->fileConfigurator->createTemporaryFile($sourceFileContent);
+        $this->sourceFileContent = $sourceFileContent;
     }
 
     /**
-     * Compress image
+     * Save compressed file
      *
-     * @param string|null $path Path to the file where the compressed file will be saved
+     * @param string $path Path to save the compressed file
      *
      * @return bool
      */
-    public function compress(?string $path = null): bool
+    public function toFile(string $path): bool
     {
-        try {
-            if (!$path) {
-                $path = $this->getSourceFilePath();
-            }
-
-            $tempFilePath = $this->fileConfigurator->createTemporaryFile();
-
-            $command = static::getCommand(
-                $this->systemCommand->getEscapedFilePath($this->getSourceFilePath()),
-                $this->systemCommand->getEscapedFilePath($tempFilePath)
-            );
-
-            if ($this->systemCommand->execute($command)->isSuccess()) {
-                if ($this->saveFile($path, $tempFilePath)) {
-                    return true;
-                }
-            }
-
-            return copy($this->getSourceFilePath(), $path);
-        } catch (Exception $exception) {
-            return false;
+        $fileContent = $this->getSourceFileContent();
+        if ($this->compress()) {
+            $fileContent = $this->getCompressedFileContent();
         }
+
+        return (bool)file_put_contents($path, $fileContent);
     }
 
     /**
-     * Command to be executed
+     * Content of the compressed file
+     *
+     * @return string
+     */
+    public function toContent(): string
+    {
+        if ($this->compress()) {
+            return $this->getCompressedFileContent();
+        }
+
+        return $this->getSourceFileContent();
+    }
+
+    /**
+     * Compression command to be executed
      *
      * @param string $sourceFilePath Path to the file to compress
-     * @param string $tempFilePath Buffer temporary file to save compressed file
+     * @param string $tempFilePath Temporary file to save compressed file
      *
      * @return string
      *
@@ -108,41 +114,63 @@ abstract class BaseCompressor
     }
 
     /**
-     * Return path to the file to compress
+     * Return path to the source temporary file
      *
      * @return string
      */
-    protected function getSourceFilePath(): string
+    protected function getSourceTempFilePath(): string
     {
-        return $this->sourceFilePath;
+        return $this->sourceTempFilePath;
     }
 
     /**
-     * Return binary data of a file
+     * Return content of a source file
      *
      * @return string
      */
-    protected function getSourceFileData(): string
+    protected function getSourceFileContent(): string
     {
-        return $this->sourceFileData;
+        return $this->sourceFileContent;
     }
 
     /**
-     * Save compressed file
-     *
-     * @param string $path Path to save the compressed file
-     * @param string $tempFilePath Path to the temporary compressed file
+     * Compress file
      *
      * @return bool
-     *
-     * @throws ErrorException
      */
-    private function saveFile(string $path, string $tempFilePath): bool
+    private function compress(): bool
     {
-        if (FileConfigurator::getFileSize($tempFilePath)) {
-            return (bool)file_put_contents($path, file_get_contents($tempFilePath));
-        }
+        try {
+            $tempFilePath = $this->fileConfigurator->createTemporaryFile();
 
-        return false;
+            $command = static::getCommand(
+                $this->systemCommand->getEscapedFilePath($this->getSourceTempFilePath()),
+                $this->systemCommand->getEscapedFilePath($tempFilePath)
+            );
+
+            if (!$this->systemCommand->execute($command)->isSuccess()) {
+                return false;
+            }
+
+            if (!FileConfigurator::getFileSize($tempFilePath)) {
+                return false;
+            }
+
+            $this->compressedTempFileContent = FileConfigurator::getFileContent($tempFilePath);
+
+            return true;
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * Return content of the compressed file
+     *
+     * @return string
+     */
+    private function getCompressedFileContent(): string
+    {
+        return $this->compressedTempFileContent;
     }
 }
