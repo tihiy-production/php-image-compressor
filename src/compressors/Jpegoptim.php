@@ -35,14 +35,8 @@ class Jpegoptim extends BaseCompressor
             '--all-progressive',
             '--quiet',
             '--max=85',
+            "-S{$this->getCompressionSize()}%%",
         ];
-
-        $size = self::DEFAULT_SIZE;
-        if ($this->isCompressionAvailable()) {
-            $size = self::MAX_SIZE;
-        }
-
-        $options[] = "-S{$size}%%";
 
         return sprintf(
             "jpegoptim %s --stdout %s > %s",
@@ -50,6 +44,18 @@ class Jpegoptim extends BaseCompressor
             $sourceFilePath,
             $tempFilePath
         );
+    }
+
+    /**
+     * Get the percentage of file compression from the original file size
+     *
+     * @return int
+     *
+     * @throws ErrorException
+     */
+    private function getCompressionSize(): int
+    {
+        return $this->isCompressionAvailable() ? self::MAX_SIZE : self::DEFAULT_SIZE;
     }
 
     /**

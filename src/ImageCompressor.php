@@ -77,6 +77,10 @@ class ImageCompressor
             throw new ErrorException('URL is not valid');
         }
 
+        if (!getimagesize($url)) {
+            throw new ErrorException('URL is not an image');
+        }
+
         $sourceFileContent = FileConfigurator::getFileContentByUrl($url);
 
         return self::getResponse($sourceFileContent);
@@ -101,13 +105,11 @@ class ImageCompressor
             throw new ErrorException("Compression is not available for '{$mimeType}' MIME-type");
         }
 
-        FileConfigurator::removeTemporaryFiles();
-
         switch ($mimeType) {
             case self::MIME_TYPE_PNG:
-                return new Pngquant($sourceFileContent);
+                return new Pngquant($sourceFileContent, $fileConfigurator);
             default:
-                return new Jpegoptim($sourceFileContent);
+                return new Jpegoptim($sourceFileContent, $fileConfigurator);
         }
     }
 

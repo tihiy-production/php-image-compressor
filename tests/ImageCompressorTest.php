@@ -172,6 +172,13 @@ class ImageCompressorTest extends TestCase
         ImageCompressor::sourceUrl()->toFile();
     }
 
+    public function testSourceUrlWithErrorFileTypeShouldThrowTypeError()
+    {
+        $this->expectException(ErrorException::class);
+
+        ImageCompressor::sourceUrl('http://www.africau.edu/images/default/sample.pdf')->toFile($this->jpegFile);
+    }
+
     public function testSourceUrlWithErrorArgumentTypeShouldThrowTypeError()
     {
         $this->expectException(TypeError::class);
