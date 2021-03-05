@@ -57,6 +57,8 @@ class FileConfigurator
     }
 
     /**
+     * Get file content from URL
+     *
      * @param string $url
      *
      * @return string

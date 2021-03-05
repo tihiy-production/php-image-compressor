@@ -50,14 +50,15 @@ abstract class BaseCompressor
     /**
      * BaseCompressor constructor.
      *
-     * @param string $sourceFileContent
+     * @param string           $sourceFileContent
+     * @param FileConfigurator $fileConfigurator
      *
      * @throws ErrorException
      */
-    public function __construct(string $sourceFileContent)
+    public function __construct(string $sourceFileContent, FileConfigurator $fileConfigurator)
     {
-        $this->fileConfigurator = new FileConfigurator();
         $this->systemCommand = new SystemCommand();
+        $this->fileConfigurator = $fileConfigurator;
         $this->sourceTempFilePath = $this->fileConfigurator->createTemporaryFile($sourceFileContent);
         $this->sourceFileContent = $sourceFileContent;
     }
