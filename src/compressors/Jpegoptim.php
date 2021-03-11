@@ -22,21 +22,26 @@ class Jpegoptim extends BaseCompressor
     private const MAX_SIZE = 40;
 
     /**
+     * @var array
+     */
+    private $options = [
+        '--force',
+        '--strip-com',
+        '--strip-iptc',
+        '--strip-icc',
+        '--strip-xmp',
+        '--all-progressive',
+        '--quiet',
+        '--max=85',
+    ];
+
+    /**
      * {@inheritDoc}
      */
     protected function getCommand(string $sourceFilePath, string $tempFilePath): string
     {
-        $options = [
-            '--force',
-            '--strip-com',
-            '--strip-iptc',
-            '--strip-icc',
-            '--strip-xmp',
-            '--all-progressive',
-            '--quiet',
-            '--max=85',
-            "-S{$this->getCompressionSize()}%%",
-        ];
+        $options = $this->options;
+        $options[] = "-S{$this->getCompressionSize()}%%";
 
         return sprintf(
             "jpegoptim %s --stdout %s > %s",
@@ -69,20 +74,9 @@ class Jpegoptim extends BaseCompressor
     {
         $compressedTempFilePath = $this->fileConfigurator->createTemporaryFile($this->getSourceFileContent());
 
-        $options = [
-            '--force',
-            '--strip-com',
-            '--strip-iptc',
-            '--strip-icc',
-            '--strip-xmp',
-            '--all-progressive',
-            '--quiet',
-            '--max=85',
-        ];
-
         $command = sprintf(
             "jpegoptim %s %s",
-            implode(' ', $options),
+            implode(' ', $this->options),
             $this->systemCommand->getEscapedFilePath($compressedTempFilePath)
         );
 
