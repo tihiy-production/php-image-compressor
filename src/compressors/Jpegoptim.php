@@ -69,8 +69,20 @@ class Jpegoptim extends BaseCompressor
     {
         $compressedTempFilePath = $this->fileConfigurator->createTemporaryFile($this->getSourceFileContent());
 
+        $options = [
+            '--force',
+            '--strip-com',
+            '--strip-iptc',
+            '--strip-icc',
+            '--strip-xmp',
+            '--all-progressive',
+            '--quiet',
+            '--max=85',
+        ];
+
         $command = sprintf(
-            "jpegoptim --force --strip-all --all-progressive --quiet --max=85 %s",
+            "jpegoptim %s %s",
+            implode(' ', $options),
             $this->systemCommand->getEscapedFilePath($compressedTempFilePath)
         );
 
