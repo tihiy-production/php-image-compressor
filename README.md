@@ -10,16 +10,10 @@
 
 The following libraries need to be installed:
 
-### Jpegoptim
+### Jpegoptim & Pngquant
 
 ```
-sudo apt-get -y install jpegoptim
-```
-
-### Pngquant
-
-```
-sudo apt-get -y install pngquant
+sudo apt-get -y install jpegoptim pngquant
 ```
 
 ## Installation
@@ -34,7 +28,8 @@ composer require "tihiy-production/php-image-compressor"
 
 You can choose a local file as the source and write it to another file.
 ```php
-tihiy\Compressor\ImageCompressor::sourceFile('uncompressed.jpg')->toFile('compressed.jpg');
+$source = tihiy\Compressor\ImageCompressor::sourceFile('uncompressed.jpg');
+$source->toFile('compressed.jpg');
 ```
 
 You can upload an image content as the source and get the compressed image data.
@@ -45,7 +40,8 @@ $resultData = tihiy\Compressor\ImageCompressor::sourceContent($sourceData)->toCo
 
 You can specify URL as a source to the image and compress it without having to upload.
 ```php
-tihiy\Compressor\ImageCompressor::sourceUrl('https://example.com/uncompressed.jpg')->toFile('compressed.jpg');
+$source = tihiy\Compressor\ImageCompressor::sourceUrl('https://example.com/uncompressed.jpg');
+$source->toFile('compressed.jpg');
 ```
 
 ## License
