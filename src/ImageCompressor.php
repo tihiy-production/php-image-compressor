@@ -45,7 +45,7 @@ class ImageCompressor
 
         $sourceFileContent = FileConfigurator::getFileContent($path);
 
-        return self::getResponse($sourceFileContent);
+        return self::getCompressor($sourceFileContent);
     }
 
     /**
@@ -59,7 +59,7 @@ class ImageCompressor
      */
     public static function sourceContent(string $content): BaseCompressor
     {
-        return self::getResponse($content);
+        return self::getCompressor($content);
     }
 
     /**
@@ -83,7 +83,7 @@ class ImageCompressor
 
         $sourceFileContent = FileConfigurator::getFileContentByUrl($url);
 
-        return self::getResponse($sourceFileContent);
+        return self::getCompressor($sourceFileContent);
     }
 
     /**
@@ -95,7 +95,7 @@ class ImageCompressor
      *
      * @throws ErrorException
      */
-    private static function getResponse(string $sourceFileContent): BaseCompressor
+    private static function getCompressor(string $sourceFileContent): BaseCompressor
     {
         $fileConfigurator = new FileConfigurator();
 
