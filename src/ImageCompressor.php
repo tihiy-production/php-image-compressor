@@ -101,40 +101,13 @@ class ImageCompressor
 
         $mimeType = mime_content_type($fileConfigurator->createTemporaryFile($sourceFileContent));
 
-        if (!self::allowCompression($mimeType)) {
-            throw new ErrorException("Compression is not available for '{$mimeType}' MIME-type");
-        }
-
         switch ($mimeType) {
             case self::MIME_TYPE_PNG:
                 return new Pngquant($sourceFileContent, $fileConfigurator);
-            default:
+            case self::MIME_TYPE_JPEG:
                 return new Jpegoptim($sourceFileContent, $fileConfigurator);
+            default:
+                throw new ErrorException("Compression is not available for '{$mimeType}' MIME-type");
         }
-    }
-
-    /**
-     * Checking for compression availability
-     *
-     * @param string $mimeType
-     *
-     * @return bool
-     */
-    private static function allowCompression(string $mimeType): bool
-    {
-        return in_array($mimeType, self::getAllowedMimeTypes(), true);
-    }
-
-    /**
-     * List of available file MIME-types
-     *
-     * @return array
-     */
-    private static function getAllowedMimeTypes(): array
-    {
-        return [
-            self::MIME_TYPE_PNG,
-            self::MIME_TYPE_JPEG,
-        ];
     }
 }
