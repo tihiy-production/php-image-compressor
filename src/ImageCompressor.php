@@ -11,8 +11,6 @@ use tihiy\Compressor\compressors\Pngquant;
 /**
  * Class ImageCompressor.
  *
- * @author  Nikita Vorushilo <young95strong@gmail.com>
- *
  * @link    https://github.com/tihiy-production/php-image-compressor
  */
 class ImageCompressor
