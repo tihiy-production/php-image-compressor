@@ -7,8 +7,6 @@ use ErrorException;
 /**
  * Class FileConfigurator.
  *
- * @author  Nikita Vorushilo <young95strong@gmail.com>
- *
  * @link    https://github.com/tihiy-production/php-image-compressor
  */
 class FileConfigurator

@@ -8,8 +8,6 @@ use tihiy\Compressor\compressors\components\FileConfigurator;
 /**
  * Class Jpegoptim.
  *
- * @author  Nikita Vorushilo <young95strong@gmail.com>
- *
  * @link    https://github.com/tihiy-production/php-image-compressor
  */
 class Jpegoptim extends BaseCompressor

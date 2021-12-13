@@ -5,8 +5,6 @@ namespace tihiy\Compressor\compressors;
 /**
  * Class Pngquant.
  *
- * @author  Nikita Vorushilo <young95strong@gmail.com>
- *
  * @link    https://github.com/tihiy-production/php-image-compressor
  */
 class Pngquant extends BaseCompressor
