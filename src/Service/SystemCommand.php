@@ -1,11 +1,9 @@
 <?php
 
-namespace tihiy\Compressor\compressors\components;
+namespace tihiy\Compressor\Service;
 
 /**
  * Class SystemCommand.
- *
- * @link    https://github.com/tihiy-production/php-image-compressor
  */
 class SystemCommand
 {
@@ -34,7 +32,7 @@ class SystemCommand
     }
 
     /**
-     * Run system command
+     * Execute system command
      *
      * @param string $command The command to be executed
      *
@@ -42,7 +40,6 @@ class SystemCommand
      */
     public function execute(string $command): self
     {
-        $this->resultCode = null;
         system($command, $this->resultCode);
 
         return $this;
@@ -55,6 +52,6 @@ class SystemCommand
      */
     public function isSuccess(): bool
     {
-        return $this->resultCode === self::SYSTEM_SUCCESS_CODE;
+        return self::SYSTEM_SUCCESS_CODE === $this->resultCode;
     }
 }

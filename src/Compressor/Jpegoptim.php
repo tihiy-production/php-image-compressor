@@ -1,16 +1,14 @@
 <?php
 
-namespace tihiy\Compressor\compressors;
+namespace tihiy\Compressor\Compressor;
 
 use ErrorException;
-use tihiy\Compressor\compressors\components\FileConfigurator;
+use tihiy\Compressor\Service\FileConfigurator;
 
 /**
  * Class Jpegoptim.
- *
- * @link    https://github.com/tihiy-production/php-image-compressor
  */
-class Jpegoptim extends BaseCompressor
+class Jpegoptim extends AbstractCompressor
 {
     /**
      * Try to optimize file to given size as percentage of the original file size
@@ -70,7 +68,7 @@ class Jpegoptim extends BaseCompressor
      */
     private function isCompressionAvailable(): bool
     {
-        $compressedTempFilePath = $this->fileConfigurator->createTemporaryFile($this->getSourceFileContent());
+        $compressedTempFilePath = FileConfigurator::createTemporaryFile($this->getSourceFile()->getContent());
 
         $command = sprintf(
             "jpegoptim %s %s",
@@ -82,6 +80,6 @@ class Jpegoptim extends BaseCompressor
             return false;
         }
 
-        return FileConfigurator::getFileSize($this->getSourceTempFilePath()) > FileConfigurator::getFileSize($compressedTempFilePath);
+        return $this->getSourceFile()->getSize() > filesize($compressedTempFilePath);
     }
 }
