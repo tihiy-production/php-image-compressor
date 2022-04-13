@@ -1,13 +1,11 @@
 <?php
 
-namespace tihiy\Compressor\compressors;
+namespace tihiy\Compressor\Compressor;
 
 /**
  * Class Pngquant.
- *
- * @link    https://github.com/tihiy-production/php-image-compressor
  */
-class Pngquant extends BaseCompressor
+class Pngquant extends AbstractCompressor
 {
     /**
      * {@inheritDoc}
