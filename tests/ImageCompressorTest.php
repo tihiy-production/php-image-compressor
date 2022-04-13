@@ -1,8 +1,8 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use tihiy\Compressor\compressors\Jpegoptim;
-use tihiy\Compressor\compressors\Pngquant;
+use tihiy\Compressor\Compressor\Jpegoptim;
+use tihiy\Compressor\Compressor\Pngquant;
 use tihiy\Compressor\ImageCompressor;
 
 class ImageCompressorTest extends TestCase

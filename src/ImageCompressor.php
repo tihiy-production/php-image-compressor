@@ -3,15 +3,14 @@
 namespace tihiy\Compressor;
 
 use ErrorException;
-use tihiy\Compressor\compressors\BaseCompressor;
-use tihiy\Compressor\compressors\components\FileConfigurator;
-use tihiy\Compressor\compressors\Jpegoptim;
-use tihiy\Compressor\compressors\Pngquant;
+use tihiy\Compressor\Assertions\FileAssertions;
+use tihiy\Compressor\Compressor\AbstractCompressor;
+use tihiy\Compressor\Object\File;
+use tihiy\Compressor\Compressor\Jpegoptim;
+use tihiy\Compressor\Compressor\Pngquant;
 
 /**
  * Class ImageCompressor.
- *
- * @link    https://github.com/tihiy-production/php-image-compressor
  */
 class ImageCompressor
 {
@@ -27,23 +26,16 @@ class ImageCompressor
      *
      * @param string $path Path to the local file to be compressed
      *
-     * @return BaseCompressor
+     * @return AbstractCompressor
      *
      * @throws ErrorException
      */
-    public static function sourceFile(string $path): BaseCompressor
+    public static function sourceFile(string $path): AbstractCompressor
     {
-        if (!file_exists($path)) {
-            throw new ErrorException('The file does not exist');
-        }
+        FileAssertions::assertExist($path);
+        FileAssertions::assertSize($path);
 
-        if (!FileConfigurator::getFileSize($path)) {
-            throw new ErrorException('File content is not available');
-        }
-
-        $sourceFileContent = FileConfigurator::getFileContent($path);
-
-        return self::getCompressor($sourceFileContent);
+        return self::create(File::createFromFile($path));
     }
 
     /**
@@ -51,13 +43,13 @@ class ImageCompressor
      *
      * @param string $content File content in string
      *
-     * @return BaseCompressor
+     * @return AbstractCompressor
      *
      * @throws ErrorException
      */
-    public static function sourceContent(string $content): BaseCompressor
+    public static function sourceContent(string $content): AbstractCompressor
     {
-        return self::getCompressor($content);
+        return self::create(File::createFromContent($content));
     }
 
     /**
@@ -65,47 +57,36 @@ class ImageCompressor
      *
      * @param string $url Absolute URL to file
      *
-     * @return BaseCompressor
+     * @return AbstractCompressor
      *
      * @throws ErrorException
      */
-    public static function sourceUrl(string $url): BaseCompressor
+    public static function sourceUrl(string $url): AbstractCompressor
     {
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new ErrorException('URL is not valid');
-        }
+        FileAssertions::assertUrl($url);
+        FileAssertions::assertImage($url);
 
-        if (!getimagesize($url)) {
-            throw new ErrorException('URL is not an image');
-        }
-
-        $sourceFileContent = FileConfigurator::getFileContentByUrl($url);
-
-        return self::getCompressor($sourceFileContent);
+        return self::create(File::createFromUrl($url));
     }
 
     /**
-     * Get a compressor object
+     * @param File $file
      *
-     * @param string $sourceFileContent File content in string to compress
-     *
-     * @return BaseCompressor
+     * @return AbstractCompressor
      *
      * @throws ErrorException
      */
-    private static function getCompressor(string $sourceFileContent): BaseCompressor
+    private static function create(File $file): AbstractCompressor
     {
-        $fileConfigurator = new FileConfigurator();
-
-        $mimeType = mime_content_type($fileConfigurator->createTemporaryFile($sourceFileContent));
+        $mimeType = $file->getMimeType();
 
         switch ($mimeType) {
             case self::MIME_TYPE_PNG:
-                return new Pngquant($sourceFileContent, $fileConfigurator);
+                return new Pngquant($file);
             case self::MIME_TYPE_JPEG:
-                return new Jpegoptim($sourceFileContent, $fileConfigurator);
-            default:
-                throw new ErrorException("Compression is not available for '{$mimeType}' MIME-type");
+                return new Jpegoptim($file);
         }
+
+        throw new ErrorException("Compression is not available for '$mimeType' MIME-type");
     }
 }
