@@ -5,6 +5,9 @@ namespace tihiy\Compressor\Object;
 use ErrorException;
 use tihiy\Compressor\Service\FileConfigurator;
 
+/**
+ * Class File.
+ */
 class File
 {
     /**
