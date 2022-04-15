@@ -4,6 +4,9 @@ namespace tihiy\Compressor\Assertions;
 
 use ErrorException;
 
+/**
+ * Class FileAssertions.
+ */
 class FileAssertions
 {
     /**
