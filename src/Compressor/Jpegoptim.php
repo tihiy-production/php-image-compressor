@@ -3,7 +3,7 @@
 namespace tihiy\Compressor\Compressor;
 
 use ErrorException;
-use tihiy\Compressor\Service\FileConfigurator;
+use tihiy\Compressor\Object\File;
 
 /**
  * Class Jpegoptim.
@@ -68,18 +68,18 @@ class Jpegoptim extends AbstractCompressor
      */
     private function isCompressionAvailable(): bool
     {
-        $compressedTempFilePath = FileConfigurator::createTemporaryFile($this->getSourceFile()->getContent());
+        $file = File::createFromContent($this->getSourceFile()->getContent());
 
         $command = sprintf(
             "jpegoptim %s %s",
             implode(' ', $this->options),
-            $this->systemCommand->getEscapedFilePath($compressedTempFilePath)
+            $this->systemCommand->getEscapedFilePath($file->getTempPath())
         );
 
         if (!$this->systemCommand->execute($command)->isSuccess()) {
             return false;
         }
 
-        return $this->getSourceFile()->getSize() > filesize($compressedTempFilePath);
+        return $this->getSourceFile()->getSize() > $file->getSize();
     }
 }
