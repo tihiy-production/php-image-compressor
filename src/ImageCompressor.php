@@ -8,6 +8,7 @@ use tihiy\Compressor\Compressor\AbstractCompressor;
 use tihiy\Compressor\Object\File;
 use tihiy\Compressor\Compressor\Jpegoptim;
 use tihiy\Compressor\Compressor\Pngquant;
+use tihiy\Compressor\Service\FileConfigurator;
 
 /**
  * Class ImageCompressor.
@@ -15,22 +16,35 @@ use tihiy\Compressor\Compressor\Pngquant;
 class ImageCompressor
 {
     /**
-     * MIME-types
+     * Allowed MIME-types
      */
     private const MIME_TYPE_PNG = 'image/png';
 
     private const MIME_TYPE_JPEG = 'image/jpeg';
 
     /**
+     * @var AbstractCompressor
+     */
+    private $compressor;
+
+    /**
+     * @param AbstractCompressor $compressor
+     */
+    public function __construct(AbstractCompressor $compressor)
+    {
+        $this->compressor = $compressor;
+    }
+
+    /**
      * Compress a local file
      *
      * @param string $path Path to the local file to be compressed
      *
-     * @return AbstractCompressor
+     * @return ImageCompressor
      *
      * @throws ErrorException
      */
-    public static function sourceFile(string $path): AbstractCompressor
+    public static function sourceFile(string $path): self
     {
         FileAssertions::assertExist($path);
         FileAssertions::assertSize($path);
@@ -43,11 +57,11 @@ class ImageCompressor
      *
      * @param string $content File content in string
      *
-     * @return AbstractCompressor
+     * @return ImageCompressor
      *
      * @throws ErrorException
      */
-    public static function sourceContent(string $content): AbstractCompressor
+    public static function sourceContent(string $content): self
     {
         return self::create(File::createFromContent($content));
     }
@@ -57,11 +71,11 @@ class ImageCompressor
      *
      * @param string $url Absolute URL to file
      *
-     * @return AbstractCompressor
+     * @return ImageCompressor
      *
      * @throws ErrorException
      */
-    public static function sourceUrl(string $url): AbstractCompressor
+    public static function sourceUrl(string $url): self
     {
         FileAssertions::assertUrl($url);
         FileAssertions::assertImage($url);
@@ -70,23 +84,53 @@ class ImageCompressor
     }
 
     /**
+     * Save compressed file
+     *
+     * @param string $path Path to save the compressed file
+     *
+     * @return bool
+     */
+    public function toFile(string $path): bool
+    {
+        return $this->compressor->toFile($path);
+    }
+
+    /**
+     * Return content of the compressed file
+     *
+     * @return string
+     */
+    public function toContent(): string
+    {
+        return $this->compressor->toContent();
+    }
+
+    /**
      * @param File $file
      *
-     * @return AbstractCompressor
+     * @return ImageCompressor
      *
      * @throws ErrorException
      */
-    private static function create(File $file): AbstractCompressor
+    private static function create(File $file): self
     {
         $mimeType = $file->getMimeType();
 
         switch ($mimeType) {
             case self::MIME_TYPE_PNG:
-                return new Pngquant($file);
+                return new self(new Pngquant($file));
             case self::MIME_TYPE_JPEG:
-                return new Jpegoptim($file);
+                return new self(new Jpegoptim($file));
         }
 
         throw new ErrorException("Compression is not available for '$mimeType' MIME-type");
+    }
+
+    /**
+     * AbstractCompressor destructor.
+     */
+    public function __destruct()
+    {
+        FileConfigurator::removeTemporaryFiles();
     }
 }

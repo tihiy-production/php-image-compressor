@@ -5,7 +5,6 @@ namespace tihiy\Compressor\Compressor;
 use ErrorException;
 use Exception;
 use tihiy\Compressor\Object\File;
-use tihiy\Compressor\Service\FileConfigurator;
 use tihiy\Compressor\Service\SystemCommand;
 
 /**
@@ -60,7 +59,7 @@ abstract class AbstractCompressor
     }
 
     /**
-     * Content of the compressed file
+     * Return content of the compressed file
      *
      * @return string
      */
@@ -76,22 +75,14 @@ abstract class AbstractCompressor
     /**
      * Compression command to be executed
      *
-     * @param string $sourceFilePath Path to the file to compress
-     * @param string $tempFilePath Temporary file to save compressed file
+     * @param string $sourceFilePath
+     * @param string $compressedFilePath
      *
      * @return string
      *
      * @throws ErrorException
      */
-    abstract protected function getCommand(string $sourceFilePath, string $tempFilePath): string;
-
-    /**
-     * AbstractCompressor destructor.
-     */
-    public function __destruct()
-    {
-        FileConfigurator::removeTemporaryFiles();
-    }
+    abstract protected function getCommand(string $sourceFilePath, string $compressedFilePath): string;
 
     /**
      * @return File
@@ -104,20 +95,18 @@ abstract class AbstractCompressor
     /**
      * @return File
      */
-    protected function getCompressedFile(): File
+    private function getCompressedFile(): File
     {
         return $this->compressedFile;
     }
 
     /**
-     * Compress file
-     *
      * @return bool
      */
     private function compress(): bool
     {
         try {
-            $command = static::getCommand(
+            $command = $this->getCommand(
                 $this->systemCommand->getEscapedFilePath($this->getSourceFile()->getTempPath()),
                 $this->systemCommand->getEscapedFilePath($this->getCompressedFile()->getTempPath())
             );
