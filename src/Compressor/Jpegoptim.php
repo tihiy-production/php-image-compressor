@@ -34,7 +34,7 @@ class Jpegoptim extends AbstractCompressor
     /**
      * {@inheritDoc}
      */
-    protected function getCommand(string $sourceFilePath, string $tempFilePath): string
+    protected function getCommand(string $sourceFilePath, string $compressedFilePath): string
     {
         $options = $this->options;
         $options[] = "-S{$this->getCompressionSize()}%%";
@@ -43,7 +43,7 @@ class Jpegoptim extends AbstractCompressor
             "jpegoptim %s --stdout %s > %s",
             implode(' ', $options),
             $sourceFilePath,
-            $tempFilePath
+            $compressedFilePath
         );
     }
 

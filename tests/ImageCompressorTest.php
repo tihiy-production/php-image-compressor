@@ -1,8 +1,6 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use tihiy\Compressor\Compressor\Jpegoptim;
-use tihiy\Compressor\Compressor\Pngquant;
 use tihiy\Compressor\ImageCompressor;
 
 class ImageCompressorTest extends TestCase
@@ -67,14 +65,9 @@ class ImageCompressorTest extends TestCase
         ImageCompressor::sourceFile(null)->toFile(null);
     }
 
-    public function testSourceFileShouldReturnJpegoptim()
+    public function testSourceFileShouldReturnImageCompressor()
     {
-        $this->assertInstanceOf(Jpegoptim::class, ImageCompressor::sourceFile($this->jpegFile));
-    }
-
-    public function testSourceFileShouldReturnPngquant()
-    {
-        $this->assertInstanceOf(Pngquant::class, ImageCompressor::sourceFile($this->pngFile));
+        $this->assertInstanceOf(ImageCompressor::class, ImageCompressor::sourceFile($this->jpegFile));
     }
 
     public function testSourceFileCompressJpegFileShouldReturnSuccessResult()
@@ -115,14 +108,9 @@ class ImageCompressorTest extends TestCase
         ImageCompressor::sourceContent(null)->toFile(null);
     }
 
-    public function testSourceContentShouldReturnJpegoptim()
+    public function testSourceContentShouldReturnImageCompressor()
     {
-        $this->assertInstanceOf(Jpegoptim::class, ImageCompressor::sourceContent(file_get_contents($this->jpegFile)));
-    }
-
-    public function testSourceContentShouldReturnPngquant()
-    {
-        $this->assertInstanceOf(Pngquant::class, ImageCompressor::sourceContent(file_get_contents($this->pngFile)));
+        $this->assertInstanceOf(ImageCompressor::class, ImageCompressor::sourceContent(file_get_contents($this->jpegFile)));
     }
 
     public function testSourceContentCompressJpegFileToFileShouldReturnSuccessResult()
@@ -186,19 +174,11 @@ class ImageCompressorTest extends TestCase
         ImageCompressor::sourceUrl(null)->toFile(null);
     }
 
-    public function testSourceUrlShouldReturnJpegoptim()
+    public function testSourceUrlShouldReturnImageCompressor()
     {
         $this->assertInstanceOf(
-            Jpegoptim::class,
+            ImageCompressor::class,
             ImageCompressor::sourceUrl('https://raw.githubusercontent.com/tihiy-production/php-image-compressor/master/tests/examples/example.jpg')
-        );
-    }
-
-    public function testSourceUrlShouldReturnPngquant()
-    {
-        $this->assertInstanceOf(
-            Pngquant::class,
-            ImageCompressor::sourceUrl('https://raw.githubusercontent.com/tihiy-production/php-image-compressor/master/tests/examples/example2.png')
         );
     }
 

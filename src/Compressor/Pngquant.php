@@ -10,7 +10,7 @@ class Pngquant extends AbstractCompressor
     /**
      * {@inheritDoc}
      */
-    protected function getCommand(string $sourceFilePath, string $tempFilePath): string
+    protected function getCommand(string $sourceFilePath, string $compressedFilePath): string
     {
         $options = [
             '--force',
@@ -23,7 +23,7 @@ class Pngquant extends AbstractCompressor
             "pngquant %s %s --output %s",
             $sourceFilePath,
             implode(' ', $options),
-            $tempFilePath
+            $compressedFilePath
         );
     }
 }
