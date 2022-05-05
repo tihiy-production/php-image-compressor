@@ -16,15 +16,6 @@
   },
   "homepage": "https://github.com/tihiy-production/php-image-compressor.git",
   "license": "MIT",
-  "support": {
-    "email": "young95strong@gmail.com"
-  },
-  "authors": [
-    {
-      "name": "Nikita Vorushilo",
-      "email": "young95strong@gmail.com"
-    }
-  ],
   "autoload": {
     "psr-4": {
       "tihiy\\Compressor\\": "src/"
