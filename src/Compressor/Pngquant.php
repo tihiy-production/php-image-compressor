@@ -14,7 +14,7 @@ class Pngquant extends AbstractCompressor
     {
         $options = [
             '--force',
-            '--skip-if-large',
+            '--skip-if-larger',
             '--speed 1',
             '--quality 85',
         ];
