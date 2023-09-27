@@ -7,8 +7,12 @@ use ErrorException;
 /**
  * Class FileAssertions.
  */
-class FileAssertions
+final class FileAssertions
 {
+    private function __construct()
+    {
+    }
+
     /**
      * @param string $path
      *
