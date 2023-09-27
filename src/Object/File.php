@@ -8,7 +8,7 @@ use tihiy\Compressor\Service\FileConfigurator;
 /**
  * Class File.
  */
-class File
+final class File
 {
     /**
      * Binary string of file
@@ -27,7 +27,7 @@ class File
      *
      * @throws ErrorException
      */
-    public function __construct(string $content)
+    private function __construct(string $content)
     {
         $this->content = $content;
         $this->tempPath = FileConfigurator::createTemporaryFile($content);

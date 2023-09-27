@@ -37,7 +37,7 @@ class Jpegoptim extends AbstractCompressor
     protected function getCommand(string $sourceFilePath, string $compressedFilePath): string
     {
         $options = $this->options;
-        $options[] = "-S{$this->getCompressionSize()}%%";
+        $options[] = "-S{$this->getCompressionSize()}%";
 
         return sprintf(
             "jpegoptim %s --stdout %s > %s",
