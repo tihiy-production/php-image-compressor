@@ -13,7 +13,7 @@ use tihiy\Compressor\Service\FileConfigurator;
 /**
  * Class ImageCompressor.
  */
-class ImageCompressor
+final class ImageCompressor
 {
     /**
      * Allowed MIME-types
@@ -30,7 +30,7 @@ class ImageCompressor
     /**
      * @param AbstractCompressor $compressor
      */
-    public function __construct(AbstractCompressor $compressor)
+    private function __construct(AbstractCompressor $compressor)
     {
         $this->compressor = $compressor;
     }

@@ -7,8 +7,12 @@ use ErrorException;
 /**
  * Class FileConfigurator.
  */
-class FileConfigurator
+final class FileConfigurator
 {
+    private function __construct()
+    {
+    }
+    
     /**
      * @var array
      */
@@ -24,7 +28,7 @@ class FileConfigurator
     public static function createTemporaryFile(string $fileData = ''): string
     {
         if ($filePath = tempnam(sys_get_temp_dir(), 'File')) {
-            static::registerTemporaryFile($filePath);
+            self::registerTemporaryFile($filePath);
 
             if ($handler = fopen($filePath, 'wb')) {
                 fwrite($handler, $fileData);
@@ -39,13 +43,13 @@ class FileConfigurator
 
     public static function removeTemporaryFiles(): void
     {
-        if (static::$temporaryFileList && is_array(static::$temporaryFileList)) {
-            foreach (static::$temporaryFileList as $index => $pathToFile) {
+        if (self::$temporaryFileList && is_array(self::$temporaryFileList)) {
+            foreach (self::$temporaryFileList as $index => $pathToFile) {
                 if (is_file($pathToFile)) {
                     unlink($pathToFile);
                 }
 
-                unset(static::$temporaryFileList[$index]);
+                unset(self::$temporaryFileList[$index]);
             }
         }
     }
@@ -55,6 +59,6 @@ class FileConfigurator
      */
     private static function registerTemporaryFile(string $pathToFile): void
     {
-        static::$temporaryFileList[] = $pathToFile;
+        self::$temporaryFileList[] = $pathToFile;
     }
 }
