@@ -2,25 +2,19 @@
 
 namespace tihiy\Compressor\Service;
 
-/**
- * Class SystemCommand.
- */
 class SystemCommand
 {
-    /**
-     * Success exit code of finished process
-     */
-    private const SYSTEM_SUCCESS_CODE = 0;
+    protected const SYSTEM_SUCCESS_CODE = 0;
 
     /**
-     * Exit code of finished process
+     * Exit code of the finished process
      *
      * @var integer
      */
-    private $resultCode;
+    protected $resultCode;
 
     /**
-     * Escape a string so that it can be used as a command line argument
+     * Escape a string to be used as a command line argument.
      *
      * @param string $path
      *
@@ -32,9 +26,9 @@ class SystemCommand
     }
 
     /**
-     * Execute system command
+     * Execute a system command.
      *
-     * @param string $command The command to be executed
+     * @param string $command The command to be executed.
      *
      * @return SystemCommand
      */
@@ -46,7 +40,7 @@ class SystemCommand
     }
 
     /**
-     * The system command was executed successfully
+     * Check if the system command was executed successfully.
      *
      * @return bool
      */
