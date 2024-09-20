@@ -4,61 +4,37 @@ namespace tihiy\Compressor\Service;
 
 use ErrorException;
 
-/**
- * Class FileConfigurator.
- */
-final class FileConfigurator
+class FileConfigurator
 {
-    private function __construct()
+    protected function __construct()
     {
     }
-    
-    /**
-     * @var array
-     */
-    private static $temporaryFileList = [];
 
-    /**
-     * @param string $fileData
-     *
-     * @return string
-     *
-     * @throws ErrorException
-     */
+    protected static $temporaryFileList = [];
+
     public static function createTemporaryFile(string $fileData = ''): string
     {
-        if ($filePath = tempnam(sys_get_temp_dir(), 'File')) {
-            self::registerTemporaryFile($filePath);
-
-            if ($handler = fopen($filePath, 'wb')) {
-                fwrite($handler, $fileData);
-                fclose($handler);
-
-                return $filePath;
-            }
+        $filePath = tempnam(sys_get_temp_dir(), 'File');
+        if (false === $filePath) {
+            throw new ErrorException('Unable to create temporary file.');
         }
 
-        throw new ErrorException('Unable to create temporary file.');
+        if (false === file_put_contents($filePath, $fileData)) {
+            throw new ErrorException('Unable to write data to temporary file.');
+        }
+
+        self::$temporaryFileList[] = $filePath;
+
+        return $filePath;
     }
 
     public static function removeTemporaryFiles(): void
     {
-        if (self::$temporaryFileList && is_array(self::$temporaryFileList)) {
-            foreach (self::$temporaryFileList as $index => $pathToFile) {
-                if (is_file($pathToFile)) {
-                    unlink($pathToFile);
-                }
-
-                unset(self::$temporaryFileList[$index]);
+        foreach (self::$temporaryFileList as $pathToFile) {
+            if (is_file($pathToFile)) {
+                unlink($pathToFile);
             }
         }
-    }
-
-    /**
-     * @param string $pathToFile
-     */
-    private static function registerTemporaryFile(string $pathToFile): void
-    {
-        self::$temporaryFileList[] = $pathToFile;
+        self::$temporaryFileList = [];
     }
 }

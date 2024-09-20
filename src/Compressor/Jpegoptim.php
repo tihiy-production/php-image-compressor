@@ -5,22 +5,15 @@ namespace tihiy\Compressor\Compressor;
 use ErrorException;
 use tihiy\Compressor\Object\File;
 
-/**
- * Class Jpegoptim.
- */
 class Jpegoptim extends AbstractCompressor
 {
     /**
      * Try to optimize file to given size as percentage of the original file size
      */
-    private const DEFAULT_SIZE = 90;
+    protected const DEFAULT_COMPRESSION = 90;
+    protected const MAX_COMPRESSION = 40;
 
-    private const MAX_SIZE = 40;
-
-    /**
-     * @var array
-     */
-    private $options = [
+    protected $options = [
         '--force',
         '--strip-com',
         '--strip-iptc',
@@ -31,55 +24,45 @@ class Jpegoptim extends AbstractCompressor
         '--max=85',
     ];
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function getCommand(string $sourceFilePath, string $compressedFilePath): string
+    public function compress(File $file): File
     {
-        $options = $this->options;
-        $options[] = "-S{$this->getCompressionSize()}%";
+        $compressedFile = File::createFromContent('');
+        $command = $this->getCommand($file, $compressedFile);
+
+        if ($this->executeCommand($command) && $compressedFile->getSize()) {
+            return $compressedFile;
+        }
+
+        throw new ErrorException('Compression failed for JPEG file.');
+    }
+
+    protected function getCommand(File $sourceFile, File $compressedFile): string
+    {
+        $compressionSize = $this->getCompressionSize($sourceFile);
 
         return sprintf(
-            "jpegoptim %s --stdout %s > %s",
-            implode(' ', $options),
-            $sourceFilePath,
-            $compressedFilePath
+            "jpegoptim %s -S%d%% --stdout %s > %s",
+            implode(' ', $this->options),
+            $compressionSize,
+            $this->systemCommand->getEscapedFilePath($sourceFile->getTempPath()),
+            $this->systemCommand->getEscapedFilePath($compressedFile->getTempPath())
         );
     }
 
-    /**
-     * Get the percentage of file compression from the original file size
-     *
-     * @return int
-     *
-     * @throws ErrorException
-     */
-    private function getCompressionSize(): int
+    protected function getCompressionSize(File $sourceFile): int
     {
-        return $this->isCompressionAvailable() ? self::MAX_SIZE : self::DEFAULT_SIZE;
+        return $this->isCompressionAvailable($sourceFile) ? self::MAX_COMPRESSION : self::DEFAULT_COMPRESSION;
     }
 
-    /**
-     * Checking for file compression availability
-     *
-     * @return bool
-     *
-     * @throws ErrorException
-     */
-    private function isCompressionAvailable(): bool
+    protected function isCompressionAvailable(File $sourceFile): bool
     {
-        $file = File::createFromContent($this->getSourceFile()->getContent());
-
+        $tempFile = File::createFromContent($sourceFile->getContent());
         $command = sprintf(
             "jpegoptim %s %s",
             implode(' ', $this->options),
-            $this->systemCommand->getEscapedFilePath($file->getTempPath())
+            $this->systemCommand->getEscapedFilePath($tempFile->getTempPath())
         );
 
-        if (!$this->systemCommand->execute($command)->isSuccess()) {
-            return false;
-        }
-
-        return $this->getSourceFile()->getSize() > $file->getSize();
+        return $this->executeCommand($command) && $sourceFile->getSize() > $tempFile->getSize();
     }
 }
